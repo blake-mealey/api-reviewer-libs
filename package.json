@@ -1,0 +1,9 @@
+{
+  "name": "api-reviewer-converter",
+  "version": "0.0.0",
+  "description": "Converts API specs into a common format for API Reviewer",
+  "main": "index.js",
+  "scripts": {},
+  "author": "Blake Mealey",
+  "license": "MIT"
+}
