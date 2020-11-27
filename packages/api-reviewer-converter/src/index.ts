@@ -1,21 +1,18 @@
-import { parseDocument as parseYamlDocument, Document } from 'yaml';
+import { parseDocument } from 'yaml';
 import { read } from 'fs-jetpack';
-import { IApiDocument } from './interfaces';
-import ApiDocumentBuilder from './ApiDocumentBuilder';
+import { ApiDocumentParserFactory } from './parsers';
 
-function parseApiDocument(document: Document.Parsed): IApiDocument {
-  const builder = new ApiDocumentBuilder();
+function convert(data: string) {
+  const document = parseDocument(data);
+  // console.dir(document.contents, { depth: null });
 
-  return builder.build();
-}
-
-export function convert(data: string) {
-  const document = parseYamlDocument(data);
-  console.dir(document.contents, { depth: null });
-  return parseApiDocument(document);
+  const parser = new ApiDocumentParserFactory().createDocumentParser(document);
+  return parser.parse();
 }
 
 const data = read('petstore.yaml');
 const apiDocument = convert(data);
 
 console.dir(apiDocument, { depth: null });
+
+export default convert;
