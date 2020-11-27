@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "ncc build src/index.ts",
-    "start": "ncc run src/index.ts"
+    "start": "yarn build --watch"
   },
   "author": "Blake Mealey",
   "license": "MIT",
