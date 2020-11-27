@@ -46,9 +46,7 @@
       "limit": "10 KB"
     }
   ],
-  "dependencies": {
-    "api-reviewer-converter": "0.0.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@size-limit/preset-small-lib": "^4.9.0",
     "@types/react": "^17.0.0",
