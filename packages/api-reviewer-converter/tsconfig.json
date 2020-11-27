@@ -2,6 +2,7 @@
   "compilerOptions": {
     "moduleResolution": "Node",
     "target": "ES2015",
-    "outDir": "dist"
+    "outDir": "dist",
+    "declaration": true
   }
 }
