@@ -1,9 +1,29 @@
 import * as React from 'react';
 import { IApiDocument } from 'api-reviewer-converter/dist/api-document/IApiDocument';
 import { blocks } from './blocks';
+import { IApiBlock } from 'api-reviewer-converter/dist/api-document/IApiBlock';
 
 interface ApiDocumentProps {
   document: IApiDocument;
+}
+
+function renderBlock(
+  block: IApiBlock
+): React.FunctionComponentElement<any> | null {
+  const component = blocks[`${block.type}Block`];
+
+  if (!component) {
+    return null;
+  }
+
+  return React.createElement(
+    component,
+    {
+      ...block.data,
+      key: block.pointer,
+    },
+    ...block.children.map(renderBlock)
+  );
 }
 
 export const ApiDocument: React.FunctionComponent<ApiDocumentProps> = ({
@@ -11,20 +31,5 @@ export const ApiDocument: React.FunctionComponent<ApiDocumentProps> = ({
 }) => {
   console.debug('Rendering document', document);
 
-  return (
-    <>
-      {document.blocks.map(block => {
-        const component = blocks[`${block.type}Block`];
-
-        if (!component) {
-          return null;
-        }
-
-        return React.createElement(component, {
-          ...block.data,
-          key: block.pointer,
-        });
-      })}
-    </>
-  );
+  return <>{document.blocks.map(renderBlock)}</>;
 };

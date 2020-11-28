@@ -1,20 +1,23 @@
 import React from 'react';
 
-interface SubtitleBlockProps {
+interface HeadingBlockProps {
   text: string;
   level: 'title' | 'subtitle';
 }
 
-export const HeadingBlock: React.FunctionComponent<SubtitleBlockProps> = ({
+export const HeadingBlock: React.FunctionComponent<HeadingBlockProps> = ({
   text,
   level,
+  children,
 }) => {
-  switch (level) {
-    case 'title':
-      return <h1>{text}</h1>;
-    case 'subtitle':
-      return <h3>{text}</h3>;
-    default:
-      return null;
-  }
+  return (
+    <div style={{ flexDirection: 'row' }}>
+      {level === 'title' ? (
+        <h1 style={{ display: 'inline-block', marginRight: '20px' }}>{text}</h1>
+      ) : level === 'subtitle' ? (
+        <h3 style={{ display: 'inline-block', marginRight: '20px' }}>{text}</h3>
+      ) : null}
+      {children}
+    </div>
+  );
 };

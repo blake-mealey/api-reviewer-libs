@@ -4,4 +4,5 @@ export interface IApiBlock {
   pointer: string;
   type: string;
   data: ApiBlockData;
+  children: IApiBlock[];
 }
