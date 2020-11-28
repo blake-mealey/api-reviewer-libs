@@ -10,6 +10,10 @@ class ApiDocumentBuilder {
     this.pointerMap = {};
   }
 
+  setPointerMap(pointerMap: PointerMap) {
+    this.pointerMap = pointerMap;
+  }
+
   appendBlock(block: IApiBlock) {
     this.blocks.push(block);
   }

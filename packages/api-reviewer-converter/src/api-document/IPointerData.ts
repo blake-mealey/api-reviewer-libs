@@ -1,3 +1,7 @@
+export type Range = [number, number];
+
 export interface IPointerData {
-  range: [number, number];
+  keyRange: Range;
+  valueRange: Range;
+  fullRange: Range;
 }
