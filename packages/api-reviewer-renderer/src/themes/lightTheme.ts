@@ -6,7 +6,7 @@ export const lightTheme: DefaultTheme = {
     accent: { base: '#76FF03', text: '#000000' },
   },
   shape: {
-    roundness: 4,
+    roundness: '4px',
   },
   spacing: x => x * 8,
   fonts: {

@@ -4,6 +4,7 @@ import { blocks } from './blocks';
 import { IApiBlock } from 'api-reviewer-converter/dist/api-document/IApiBlock';
 import { RootProvider } from './providers/RootProvider';
 import styled from 'styled-components';
+import { BlockProvider } from './providers/BlockProvider';
 
 interface ApiDocumentProps {
   document: IApiDocument;
@@ -18,13 +19,14 @@ function renderBlock(
     return null;
   }
 
-  return React.createElement(
-    component,
-    {
-      ...block.data,
-      key: block.pointer,
-    },
-    ...block.children.map(renderBlock)
+  return (
+    <BlockProvider block={block} key={block.pointer}>
+      {React.createElement(
+        component,
+        block.data,
+        ...block.children.map(renderBlock)
+      )}
+    </BlockProvider>
   );
 }
 

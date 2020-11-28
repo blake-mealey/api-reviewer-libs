@@ -41,7 +41,7 @@ declare module 'styled-components' {
     spacing: (x: number) => number;
 
     shape: {
-      roundness: 4;
+      roundness: string;
     };
 
     fonts: ThemeFonts;
