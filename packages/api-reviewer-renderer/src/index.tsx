@@ -3,6 +3,7 @@ import { IApiDocument } from 'api-reviewer-converter/dist/api-document/IApiDocum
 import { blocks } from './blocks';
 import { IApiBlock } from 'api-reviewer-converter/dist/api-document/IApiBlock';
 import { RootProvider } from './providers/RootProvider';
+import styled from 'styled-components';
 
 interface ApiDocumentProps {
   document: IApiDocument;
@@ -27,10 +28,22 @@ function renderBlock(
   );
 }
 
+const Container = styled.main`
+  display: flex;
+  flex-direction: column;
+  gap: ${p => p.theme.spacing(2)}px;
+  width: max(75%, 800px);
+  margin: ${p => p.theme.spacing(4)}px auto 0 auto;
+`;
+
 export const ApiDocument: React.FunctionComponent<ApiDocumentProps> = ({
   document,
 }) => {
   console.debug('Rendering document', document);
 
-  return <RootProvider>{document.blocks.map(renderBlock)}</RootProvider>;
+  return (
+    <RootProvider>
+      <Container>{document.blocks.map(renderBlock)}</Container>
+    </RootProvider>
+  );
 };
