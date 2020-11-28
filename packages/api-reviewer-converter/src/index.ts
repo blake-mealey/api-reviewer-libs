@@ -1,12 +1,12 @@
 import { parseDocument } from 'yaml';
-import { ApiDocumentParserFactory } from './parsers';
+import { ApiDocumentConverterFactory } from './converters';
 
 export function convert(data: string) {
   const document = parseDocument(data);
   // console.dir(document.contents, { depth: null });
 
-  const parser = new ApiDocumentParserFactory().createDocumentParser(document);
-  return parser.parse();
+  const converter = new ApiDocumentConverterFactory().createConverter(document);
+  return converter.convert();
 }
 
 // import { read } from 'fs-jetpack';

@@ -3,7 +3,7 @@ import { Collection } from 'yaml/types';
 import { IApiDocument } from '../api-document/IApiDocument';
 import ApiDocumentBuilder from './ApiDocumentBuilder';
 
-abstract class ApiDocumentParser {
+abstract class ApiDocumentConverter {
   protected document: Document.Parsed;
   protected builder: ApiDocumentBuilder;
   protected rootNode: Collection;
@@ -14,7 +14,7 @@ abstract class ApiDocumentParser {
     this.rootNode = document.contents as Collection;
   }
 
-  abstract parse(): IApiDocument;
+  abstract convert(): IApiDocument;
 }
 
-export default ApiDocumentParser;
+export default ApiDocumentConverter;

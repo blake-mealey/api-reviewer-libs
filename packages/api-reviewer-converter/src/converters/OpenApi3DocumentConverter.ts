@@ -5,7 +5,7 @@ import {
   IApiDocumentValueNode,
 } from '../api-document/IApiDocumentNode';
 import { Range } from '../nodes/nodes';
-import ApiDocumentParser from './ApiDocumentParser';
+import ApiDocumentConverter from './ApiDocumentConverter';
 
 interface TPair<TValue> extends Pair {
   key: Scalar;
@@ -66,12 +66,12 @@ function createValueNode<TValue>(node: Scalar): IApiDocumentValueNode<TValue> {
   };
 }
 
-class OpenApi3DocumentParser extends ApiDocumentParser {
+class OpenApi3DocumentConverter extends ApiDocumentConverter {
   constructor(document: Document.Parsed) {
     super(document);
   }
 
-  private parseSpec() {
+  private convertSpec() {
     const spec = getPair<Scalar>(this.rootNode, 'openapi');
 
     this.builder.setSpec(
@@ -82,7 +82,7 @@ class OpenApi3DocumentParser extends ApiDocumentParser {
     );
   }
 
-  private parseInfo() {
+  private convertInfo() {
     const info = getPair<YAMLMap>(this.rootNode, 'info');
     const contact = getPair<YAMLMap>(info.value, 'contact');
     const license = getPair<YAMLMap>(info.value, 'license');
@@ -110,12 +110,12 @@ class OpenApi3DocumentParser extends ApiDocumentParser {
     );
   }
 
-  parse() {
-    this.parseSpec();
-    this.parseInfo();
+  convert() {
+    this.convertSpec();
+    this.convertInfo();
 
     return this.builder.build();
   }
 }
 
-export default OpenApi3DocumentParser;
+export default OpenApi3DocumentConverter;
