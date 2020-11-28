@@ -115,13 +115,12 @@ components:
           type: string
 `;
 
-const apiDocument = convert(data);
-console.log(apiDocument);
-
 const App = () => {
+  const document = React.useMemo(() => convert(data), [data]);
+
   return (
     <div>
-      <ApiDocument apiDocument={apiDocument} />
+      <ApiDocument document={document} />
     </div>
   );
 };

@@ -1,14 +1,22 @@
 import * as React from 'react';
-
 import { IApiDocument } from 'api-reviewer-converter/dist/api-document/IApiDocument';
-import { renderDocument } from './blocks';
+import { blocks } from './blocks';
 
 interface ApiDocumentProps {
-  apiDocument: IApiDocument;
+  document: IApiDocument;
 }
 
 export const ApiDocument: React.FunctionComponent<ApiDocumentProps> = ({
-  apiDocument,
+  document,
 }) => {
-  return <>{renderDocument(apiDocument)}</>;
+  return (
+    <>
+      {document.blocks.map(block =>
+        React.createElement(blocks[`${block.type}Block`], {
+          ...block.data,
+          key: block.pointer,
+        })
+      )}
+    </>
+  );
 };
