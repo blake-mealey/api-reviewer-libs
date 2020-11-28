@@ -3,13 +3,51 @@ import { Pair, Node, YAMLMap, YAMLSeq } from 'yaml/types';
 import { PointerMap } from '../api-document/IApiDocument';
 import { compile } from 'json-pointer';
 import { PointerData } from '../api-document/PointerData';
-import { IPointerData } from '../api-document/IPointerData';
+import { IDocumentPosition, IPointerData } from '../api-document/IPointerData';
+
+class DocumentPositionFinder {
+  private documentString: string;
+  private positionMap: Map<number, IDocumentPosition>;
+
+  constructor(documentString: string) {
+    this.documentString = documentString;
+    this.positionMap = new Map();
+  }
+
+  find(globalNumber: number) {
+    let pos = this.positionMap.get(globalNumber);
+    if (pos) {
+      return pos;
+    }
+
+    const sub = this.documentString.substring(0, globalNumber);
+    const lines = sub.split('\n');
+    const lineNumber = lines.length;
+    const characterNumber = lines[lines.length - 1].length + 1;
+    pos = {
+      line: lineNumber,
+      character: characterNumber,
+      global: globalNumber,
+    };
+    this.positionMap.set(globalNumber, pos);
+    return pos;
+  }
+
+  findRange([globalPosition1, globalPosition2]: [number, number]): [
+    IDocumentPosition,
+    IDocumentPosition
+  ] {
+    return [this.find(globalPosition1), this.find(globalPosition2)];
+  }
+}
 
 export class PointerMapFactory {
-  private document: Document.Parsed;
-  private pointerMap: PointerMap;
+  protected documentPositionFinder: DocumentPositionFinder;
+  protected document: Document.Parsed;
+  protected pointerMap: PointerMap;
 
-  constructor(document: Document.Parsed) {
+  constructor(documentString: string, document: Document.Parsed) {
+    this.documentPositionFinder = new DocumentPositionFinder(documentString);
     this.document = document;
     this.pointerMap = new Map();
   }
@@ -22,7 +60,13 @@ export class PointerMapFactory {
     seq.items.forEach((item: Node, index: number) => {
       const itemPath = [...path, index.toString()];
       // TODO: Should we have a `key` range for sequences?
-      this.set(itemPath, new PointerData(item.range, item.range));
+      this.set(
+        itemPath,
+        new PointerData(
+          this.documentPositionFinder.findRange(item.range),
+          this.documentPositionFinder.findRange(item.range)
+        )
+      );
 
       this.processNode(item, itemPath);
     });
@@ -31,7 +75,13 @@ export class PointerMapFactory {
   private processMap(map: YAMLMap, path: string[]) {
     map.items.forEach((item: Pair) => {
       const itemPath = [...path, item.key.value];
-      this.set(itemPath, new PointerData(item.key.range, item.value.range));
+      this.set(
+        itemPath,
+        new PointerData(
+          this.documentPositionFinder.findRange(item.key.range),
+          this.documentPositionFinder.findRange(item.value.range)
+        )
+      );
 
       this.processNode(item.value, itemPath);
     });

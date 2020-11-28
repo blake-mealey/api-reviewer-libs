@@ -4,11 +4,13 @@ import { IApiDocument } from '../api-document/IApiDocument';
 import ApiDocumentBuilder from './ApiDocumentBuilder';
 
 abstract class ApiDocumentConverter {
+  protected documentString: string;
   protected document: Document.Parsed;
   protected builder: ApiDocumentBuilder;
   protected rootNode: Collection;
 
-  constructor(document: Document.Parsed) {
+  constructor(documentString: string, document: Document.Parsed) {
+    this.documentString = documentString;
     this.document = document;
     this.builder = new ApiDocumentBuilder();
     this.rootNode = document.contents as Collection;

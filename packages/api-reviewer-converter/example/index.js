@@ -5,4 +5,4 @@ const data = fs.read('petstore.yaml');
 
 const document = convert(data);
 
-console.dir(document.blocks, { depth: null });
+console.dir(document.pointerMap, { depth: null });

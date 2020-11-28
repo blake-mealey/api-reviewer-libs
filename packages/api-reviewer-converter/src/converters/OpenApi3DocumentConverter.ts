@@ -53,7 +53,10 @@ class OpenApi3DocumentConverter extends ApiDocumentConverter {
 
   convert() {
     this.builder.setPointerMap(
-      new PointerMapFactory(this.document).createPointerMap()
+      new PointerMapFactory(
+        this.documentString,
+        this.document
+      ).createPointerMap()
     );
 
     this.convertInfoAndOpenApi();
