@@ -8,9 +8,5 @@ interface ParagraphBlockProps {
 export const ParagraphBlock: React.FunctionComponent<ParagraphBlockProps> = ({
   text,
 }) => {
-  return (
-    <p>
-      <ReactMarkdown children={text} />
-    </p>
-  );
+  return <ReactMarkdown children={text} />;
 };
