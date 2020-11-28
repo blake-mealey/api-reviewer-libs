@@ -1,24 +1,24 @@
-import { IApiDocument } from '../api-document/IApiDocument';
-import { IApiDocumentInfo } from '../api-document/IApiDocumentInfo';
-import { IApiDocumentSpec } from '../api-document/IApiDocumentSpec';
+import { IApiBlock } from '../api-document/IApiBlock';
+import { IApiDocument, PointerMap } from '../api-document/IApiDocument';
 
 class ApiDocumentBuilder {
-  private document: IApiDocument;
+  private blocks: IApiBlock[];
+  private pointerMap: PointerMap;
 
   constructor() {
-    this.document = {};
+    this.blocks = [];
+    this.pointerMap = {};
   }
 
-  setSpec(spec: IApiDocumentSpec) {
-    this.document.spec = spec;
-  }
-
-  setInfo(info: IApiDocumentInfo) {
-    this.document.info = info;
+  appendBlock(block: IApiBlock) {
+    this.blocks.push(block);
   }
 
   build(): IApiDocument {
-    return this.document;
+    return {
+      blocks: this.blocks,
+      pointerMap: this.pointerMap,
+    };
   }
 }
 
