@@ -2,10 +2,10 @@ import React from 'react';
 import styled from 'styled-components';
 
 const StyledTag = styled.span`
-  background-color: blue;
-  color: white;
+  background-color: ${p => p.theme.colors.accent.base};
+  color: ${p => p.theme.colors.accent.text};
   border-radius: 100px;
-  padding: 5px;
+  padding: ${p => p.theme.spacing(1)}px;
 `;
 
 interface TagBlockProps {

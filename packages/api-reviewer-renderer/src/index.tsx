@@ -2,6 +2,7 @@ import * as React from 'react';
 import { IApiDocument } from 'api-reviewer-converter/dist/api-document/IApiDocument';
 import { blocks } from './blocks';
 import { IApiBlock } from 'api-reviewer-converter/dist/api-document/IApiBlock';
+import { RootProvider } from './providers/RootProvider';
 
 interface ApiDocumentProps {
   document: IApiDocument;
@@ -31,5 +32,5 @@ export const ApiDocument: React.FunctionComponent<ApiDocumentProps> = ({
 }) => {
   console.debug('Rendering document', document);
 
-  return <>{document.blocks.map(renderBlock)}</>;
+  return <RootProvider>{document.blocks.map(renderBlock)}</RootProvider>;
 };
