@@ -1,0 +1,29 @@
+openapiExtensionFormat: 0.1.0
+com.readme:
+  x-explorer-enabled:
+    summary: Disable the API Explorer
+    description: |
+      Completely disable our API Explorer and prevent your users from interacting with the API by
+      filling out the form and making API requests. Note that this will not disable your API
+      Reference documentation, just their ability to interact with your API.
+    externalDocs:
+      description: Readme docs
+      url: https://docs.readme.com/docs/openapi-extensions#disable-the-api-explorer
+    provider:
+      $ref: '#/components/providers/readme'
+    schema:
+      type: boolean
+      default: true
+    oas2:
+      usage: restricted
+      objectTypes:
+        - OperationObject
+    oas3:
+      usage: restricted
+      objectTypes:
+        - OperationObject
+components:
+  providers:
+    readme:
+      name: Readme
+      url: https://readme.com
