@@ -1,4 +1,3 @@
-import { Document } from 'yaml';
 import { Collection, Node, Pair, Scalar, YAMLMap } from 'yaml/types';
 import {
   IApiDocumentNode,
@@ -21,7 +20,7 @@ function getPair<TValue extends Node>(collection: Collection, key: string) {
     throw new Error('Attempted lookup in non-map collection');
   }
 
-  const pair: Pair = collection.items.find((pair) => pair.key.value === key);
+  const pair: Pair = collection.items.find(pair => pair.key.value === key);
   if (pair) {
     return {
       key: pair.key,
@@ -67,10 +66,6 @@ function createValueNode<TValue>(node: Scalar): IApiDocumentValueNode<TValue> {
 }
 
 class OpenApi3DocumentConverter extends ApiDocumentConverter {
-  constructor(document: Document.Parsed) {
-    super(document);
-  }
-
   private convertSpec() {
     const spec = getPair<Scalar>(this.rootNode, 'openapi');
 

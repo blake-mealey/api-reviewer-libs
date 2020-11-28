@@ -22,11 +22,12 @@ export class Node {
   }
 
   get items() {
-    return this._items?.map((item) => new NodePair(item));
+    return this._items;
+    // return this._items?.map(item => new NodePair(item));
   }
 
   find(key: string) {
-    const node = this.items?.find((item) => item.key.value === key);
+    const node = this.items?.find(item => item.key.value === key);
     if (node) {
       return new NodePair(node);
     }
