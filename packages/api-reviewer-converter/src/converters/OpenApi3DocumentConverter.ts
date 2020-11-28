@@ -5,8 +5,9 @@ import { PointerMapFactory } from './PointerMapFactory';
 class OpenApi3DocumentConverter extends ApiDocumentConverter {
   convertInfoAndOpenApi() {
     this.builder.appendBlock(
-      new ApiBlock('Subtitle', ['openapi'], {
+      new ApiBlock('Heading', ['openapi'], {
         text: `openapi v${this.document.get('openapi')}`,
+        level: 'subtitle',
       })
     );
   }

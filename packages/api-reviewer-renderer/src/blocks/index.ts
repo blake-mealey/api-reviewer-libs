@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'react';
-import { SubtitleBlock } from './SubtitleBlock';
+import { HeadingBlock } from './HeadingBlock';
 
 export const blocks: Record<string, FunctionComponent<any>> = {
-  SubtitleBlock,
+  HeadingBlock,
 };

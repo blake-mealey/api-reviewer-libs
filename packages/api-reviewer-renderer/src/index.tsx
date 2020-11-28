@@ -9,14 +9,22 @@ interface ApiDocumentProps {
 export const ApiDocument: React.FunctionComponent<ApiDocumentProps> = ({
   document,
 }) => {
+  console.debug('Rendering document', document);
+
   return (
     <>
-      {document.blocks.map(block =>
-        React.createElement(blocks[`${block.type}Block`], {
+      {document.blocks.map(block => {
+        const component = blocks[`${block.type}Block`];
+
+        if (!component) {
+          return null;
+        }
+
+        return React.createElement(component, {
           ...block.data,
           key: block.pointer,
-        })
-      )}
+        });
+      })}
     </>
   );
 };
