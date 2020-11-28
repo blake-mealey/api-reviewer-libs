@@ -1,9 +1,24 @@
 import React from 'react';
+import styled, { ThemeFonts } from 'styled-components';
+import { Text } from '../components/Text';
+
+type HeadingLevel = 'title' | 'subtitle';
 
 interface HeadingBlockProps {
   text: string;
-  level: 'title' | 'subtitle';
+  level: HeadingLevel;
 }
+
+const levelToType: Record<HeadingLevel, keyof Omit<ThemeFonts, 'defaults'>> = {
+  title: 'h4',
+  subtitle: 'h6',
+};
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: ${p => p.theme.spacing(2)}px;
+`;
 
 export const HeadingBlock: React.FunctionComponent<HeadingBlockProps> = ({
   text,
@@ -11,13 +26,9 @@ export const HeadingBlock: React.FunctionComponent<HeadingBlockProps> = ({
   children,
 }) => {
   return (
-    <div style={{ flexDirection: 'row' }}>
-      {level === 'title' ? (
-        <h1 style={{ display: 'inline-block', marginRight: '20px' }}>{text}</h1>
-      ) : level === 'subtitle' ? (
-        <h3 style={{ display: 'inline-block', marginRight: '20px' }}>{text}</h3>
-      ) : null}
+    <Container>
+      <Text type={levelToType[level]}>{text}</Text>
       {children}
-    </div>
+    </Container>
   );
 };
