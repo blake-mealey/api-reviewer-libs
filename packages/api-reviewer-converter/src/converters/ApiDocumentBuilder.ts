@@ -7,7 +7,7 @@ class ApiDocumentBuilder {
 
   constructor() {
     this.blocks = [];
-    this.pointerMap = {};
+    this.pointerMap = new Map();
   }
 
   setPointerMap(pointerMap: PointerMap) {

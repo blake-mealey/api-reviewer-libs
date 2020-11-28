@@ -11,11 +11,11 @@ export class PointerMapFactory {
 
   constructor(document: Document.Parsed) {
     this.document = document;
-    this.pointerMap = {};
+    this.pointerMap = new Map();
   }
 
   private set(path: string[], data: IPointerData) {
-    this.pointerMap[compile(path)] = data;
+    this.pointerMap.set(compile(path), data);
   }
 
   private processSeq(seq: YAMLSeq, path: string[]) {
