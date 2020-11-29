@@ -8,6 +8,11 @@ import { Collection, Node } from 'yaml/types';
 import { parse } from 'json-pointer';
 import { IApiBlock } from '../../api-document/IApiBlock';
 
+interface IPointerCallbackContext {
+  node: Collection;
+  addBlock: (block: IApiBlock) => void;
+}
+
 function getInDocument(document: Document.Parsed, pointer: string) {
   let collection = document.contents as Collection;
   const pointerParts = parse(pointer);
@@ -26,7 +31,7 @@ class OpenApi3DocumentConverter extends ApiDocumentConverter {
 
   walkPointers(
     pointerMap: PointerMap,
-    handlers: Record<string, (node: Collection, blocks: IApiBlock[]) => void>
+    handlers: Record<string, (context: IPointerCallbackContext) => void>
   ) {
     pointerMap.forEach((pointerData, pointer) => {
       if (pointerData.schemaName) {
@@ -37,7 +42,12 @@ class OpenApi3DocumentConverter extends ApiDocumentConverter {
             pointer
           ) as Collection;
           const blocks: IApiBlock[] = [];
-          handler(collection, blocks);
+          handler({
+            node: collection,
+            addBlock: (block: IApiBlock) => {
+              blocks.push(block);
+            },
+          });
           this.builder.appendBlocks(blocks);
           // TODO: If extensions, ...
         }
@@ -55,31 +65,32 @@ class OpenApi3DocumentConverter extends ApiDocumentConverter {
     this.builder.setPointerMap(pointerMap);
 
     this.walkPointers(pointerMap, {
-      OpenAPI: (node, blocks) => {
-        blocks.push(
-          new ApiBlock(
-            'Heading',
-            ['info', 'title'],
-            {
-              text: node.get('info').get('title'),
-              level: 'title',
-            },
-            [
-              new ApiBlock('Tag', ['info', 'version'], {
-                text: `v${node.get('info').get('version')}`,
-              }),
-            ]
-          )
-        );
-
-        blocks.push(
+      OpenAPI: ({ node, addBlock }) => {
+        addBlock(
           new ApiBlock('Heading', ['openapi'], {
             text: `openapi v${node.get('openapi')}`,
             level: 'subtitle',
           })
         );
+      },
+      Info: ({ node, addBlock }) => {
+        addBlock(
+          new ApiBlock(
+            'Heading',
+            ['info', 'title'],
+            {
+              text: node.get('title'),
+              level: 'title',
+            },
+            [
+              new ApiBlock('Tag', ['info', 'version'], {
+                text: `v${node.get('version')}`,
+              }),
+            ]
+          )
+        );
 
-        const license = node.get('info').get('license');
+        const license = node.get('license');
         const name = license.get('name');
         const url = license.get('url');
         let licenseText: string;
@@ -90,15 +101,15 @@ class OpenApi3DocumentConverter extends ApiDocumentConverter {
         } else if (url) {
           licenseText = `License: <${url}>`;
         }
-        blocks.push(
+        addBlock(
           new ApiBlock('Paragraph', ['info', 'license'], {
             text: licenseText,
           })
         );
 
-        blocks.push(
+        addBlock(
           new ApiBlock('Paragraph', ['info', 'description'], {
-            text: node.get('info').get('description'),
+            text: node.get('description'),
           })
         );
       },
