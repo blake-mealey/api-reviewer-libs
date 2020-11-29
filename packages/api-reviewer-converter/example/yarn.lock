@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@types/json-pointer@^1.0.30":
+  version "1.0.30"
+  resolved "https://registry.yarnpkg.com/@types/json-pointer/-/json-pointer-1.0.30.tgz#b973c1f79b1f61d424b7d92b954e01e6c68ee66d"
+  integrity sha1-uXPB95sfYdQkt9krlU4B5saO5m0=
+
 balanced-match@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.0.tgz#89b4d199ab2bee49de164ea02b89ce462d71b767"
