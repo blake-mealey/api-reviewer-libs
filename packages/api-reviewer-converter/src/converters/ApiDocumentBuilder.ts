@@ -14,8 +14,8 @@ class ApiDocumentBuilder {
     this.pointerMap = pointerMap;
   }
 
-  appendBlock(block: IApiBlock) {
-    this.blocks.push(block);
+  appendBlocks(blocks: IApiBlock[]) {
+    this.blocks.push(...blocks);
   }
 
   build(): IApiDocument {

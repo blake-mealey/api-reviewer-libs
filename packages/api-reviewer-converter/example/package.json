@@ -4,5 +4,8 @@
   },
   "dependencies": {
     "fs-jetpack": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/json-pointer": "^1.0.30"
   }
 }

@@ -10,4 +10,6 @@ export interface IPointerData {
   keyRange: Range;
   valueRange: Range;
   fullRange: Range;
+  supportsExtensions: boolean;
+  schemaName?: string;
 }

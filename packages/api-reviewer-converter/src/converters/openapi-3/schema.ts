@@ -1,4 +1,6 @@
-id: https://spec.openapis.org/oas/3.0/schema/2019-04-02
+import { parse } from 'yaml';
+
+export const schema = parse(`id: https://spec.openapis.org/oas/3.0/schema/2019-04-02
 $schema: http://json-schema.org/draft-04/schema#
 description: Validation schema for OpenAPI Specification 3.0.X.
 type: object
@@ -999,3 +1001,4 @@ definitions:
         type: boolean
         default: false
     additionalProperties: false
+`);

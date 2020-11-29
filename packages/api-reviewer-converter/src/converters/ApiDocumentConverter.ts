@@ -16,7 +16,7 @@ abstract class ApiDocumentConverter {
     this.rootNode = document.contents as Collection;
   }
 
-  abstract convert(): IApiDocument;
+  abstract convert(): Promise<IApiDocument>;
 }
 
 export default ApiDocumentConverter;
