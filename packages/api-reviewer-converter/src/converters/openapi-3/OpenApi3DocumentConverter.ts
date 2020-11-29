@@ -1,6 +1,6 @@
-import { ApiBlock } from '../api-document/ApiBlock';
-import ApiDocumentConverter from './ApiDocumentConverter';
-import { PointerMapFactory } from './PointerMapFactory';
+import { ApiBlock } from '../../api-document/ApiBlock';
+import ApiDocumentConverter from '../ApiDocumentConverter';
+import { PointerMapFactory } from '../PointerMapFactory';
 
 class OpenApi3DocumentConverter extends ApiDocumentConverter {
   convertInfoAndOpenApi() {

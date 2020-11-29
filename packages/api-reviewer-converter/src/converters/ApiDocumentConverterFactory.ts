@@ -1,6 +1,6 @@
 import { parseDocument } from 'yaml';
 import ApiDocumentConverter from './ApiDocumentConverter';
-import OpenApi3DocumentConverter from './OpenApi3DocumentConverter';
+import OpenApi3DocumentConverter from './openapi-3/OpenApi3DocumentConverter';
 
 class ApiDocumentConverterFactory {
   protected documentString: string;
