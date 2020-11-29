@@ -3,22 +3,25 @@ import ApiDocumentConverter from '../ApiDocumentConverter';
 import { PointerMapFactory } from '../PointerMapFactory';
 import { schema } from './schema';
 import { PointerMap } from '../../api-document/IApiDocument';
-import { Document } from 'yaml';
-import { Collection, Node } from 'yaml/types';
+import { Collection, Node, Scalar } from 'yaml/types';
 import { parse } from 'json-pointer';
 import { IApiBlock } from '../../api-document/IApiBlock';
 
 interface IPointerCallbackContext {
   node: Collection;
-  addBlock: (block: IApiBlock) => void;
+  add(block: IApiBlock): void;
+  get<TNode extends Node>(pointer: string): TNode;
+  block(
+    type: string,
+    subPointer: string,
+    data: Record<string, any>,
+    children?: IApiBlock[]
+  ): IApiBlock;
 }
 
-function getInDocument(document: Document.Parsed, pointer: string) {
-  let collection = document.contents as Collection;
-  const pointerParts = parse(pointer);
-
-  while (pointerParts.length > 0) {
-    const property = pointerParts.shift();
+function getInCollection(collection: Collection, pointer: string[]) {
+  while (pointer.length > 0 && collection) {
+    const property = pointer.shift();
     if (property !== '') {
       collection = collection.get(property);
     }
@@ -37,15 +40,37 @@ class OpenApi3DocumentConverter extends ApiDocumentConverter {
       if (pointerData.schemaName) {
         const handler = handlers[pointerData.schemaName];
         if (handler) {
-          const collection = getInDocument(
-            this.document,
-            pointer
+          const parsedPointer = parse(pointer);
+
+          const collection = getInCollection(
+            this.document.contents as Collection,
+            parsedPointer
           ) as Collection;
+
           const blocks: IApiBlock[] = [];
           handler({
             node: collection,
-            addBlock: (block: IApiBlock) => {
+            block(
+              type: string,
+              subPointer: string,
+              data: Record<string, any>,
+              children?: IApiBlock[]
+            ) {
+              return new ApiBlock(
+                type,
+                [...parsedPointer, ...parse(subPointer)],
+                data,
+                children
+              );
+            },
+            add(block: IApiBlock) {
               blocks.push(block);
+            },
+            get<TNode>(subPointer: string) {
+              return (getInCollection(collection, [
+                ...parsedPointer,
+                ...parse(subPointer),
+              ]) as unknown) as TNode;
             },
           });
           this.builder.appendBlocks(blocks);
@@ -65,34 +90,33 @@ class OpenApi3DocumentConverter extends ApiDocumentConverter {
     this.builder.setPointerMap(pointerMap);
 
     this.walkPointers(pointerMap, {
-      OpenAPI: ({ node, addBlock }) => {
-        addBlock(
-          new ApiBlock('Heading', ['openapi'], {
-            text: `openapi v${node.get('openapi')}`,
+      OpenAPI: ({ add, block, get }) => {
+        add(
+          block('Heading', '/openapi', {
+            text: `openapi v${get<Scalar>('/openapi').value}`,
             level: 'subtitle',
           })
         );
       },
-      Info: ({ node, addBlock }) => {
-        addBlock(
-          new ApiBlock(
+      Info: ({ add, get, block }) => {
+        add(
+          block(
             'Heading',
-            ['info', 'title'],
+            '/title',
             {
-              text: node.get('title'),
+              text: get<Scalar>('/title') ?? '_No Title_',
               level: 'title',
             },
             [
-              new ApiBlock('Tag', ['info', 'version'], {
-                text: `v${node.get('version')}`,
+              block('Tag', '/version', {
+                text: get<Scalar>('/version') ?? '_No Version_',
               }),
             ]
           )
         );
 
-        const license = node.get('license');
-        const name = license.get('name');
-        const url = license.get('url');
+        const name = get<Scalar>('/license/name');
+        const url = get<Scalar>('/licence/url');
         let licenseText: string;
         if (name && url) {
           licenseText = `License: [${name}](${url})`;
@@ -101,15 +125,14 @@ class OpenApi3DocumentConverter extends ApiDocumentConverter {
         } else if (url) {
           licenseText = `License: <${url}>`;
         }
-        addBlock(
-          new ApiBlock('Paragraph', ['info', 'license'], {
+        add(
+          block('Paragraph', '/licence', {
             text: licenseText,
           })
         );
-
-        addBlock(
-          new ApiBlock('Paragraph', ['info', 'description'], {
-            text: node.get('description'),
+        add(
+          block('Paragraph', '/description', {
+            text: get<Scalar>('/description'),
           })
         );
       },
