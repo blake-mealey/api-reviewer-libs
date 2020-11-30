@@ -3,16 +3,18 @@ import { IApiDocument } from 'api-reviewer-converter/dist/api-document/IApiDocum
 import { blocks } from './blocks';
 import { IApiBlock } from 'api-reviewer-converter/dist/api-document/IApiBlock';
 import { RootProvider } from './providers/RootProvider';
-import { BlockProvider } from './providers/BlockProvider';
+import { BlockAction, BlockProvider } from './providers/BlockProvider';
 import { PointerMapProvider } from './providers/PointerMapProvider';
 import { Box, Container, Grid } from '@material-ui/core';
 
 interface ApiDocumentProps {
   document: IApiDocument;
+  actions?: BlockAction[];
 }
 
 function renderBlock(
-  block: IApiBlock
+  block: IApiBlock,
+  actions?: BlockAction[]
 ): React.FunctionComponentElement<any> | null {
   const component = blocks[`${block.type}Block`];
 
@@ -22,11 +24,11 @@ function renderBlock(
 
   return (
     <Grid item key={block.pointer}>
-      <BlockProvider block={block}>
+      <BlockProvider block={block} actions={actions}>
         {React.createElement(
           component,
           block.data,
-          ...block.children.map(renderBlock)
+          ...block.children.map(block => renderBlock(block, actions))
         )}
       </BlockProvider>
     </Grid>
@@ -35,6 +37,7 @@ function renderBlock(
 
 export const ApiDocument: React.FunctionComponent<ApiDocumentProps> = ({
   document,
+  actions,
 }) => {
   console.debug('Rendering document', document);
 
@@ -44,7 +47,7 @@ export const ApiDocument: React.FunctionComponent<ApiDocumentProps> = ({
         <Container maxWidth="md">
           <Box mt={4}>
             <Grid container direction="column" spacing={2}>
-              {document.blocks.map(renderBlock)}
+              {document.blocks.map(block => renderBlock(block, actions))}
             </Grid>
           </Box>
         </Container>
