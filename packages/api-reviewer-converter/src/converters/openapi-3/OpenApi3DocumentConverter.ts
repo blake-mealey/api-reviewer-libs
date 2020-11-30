@@ -12,12 +12,14 @@ import {
 } from '../ConverterHandler';
 
 function getInCollection(collection: Collection, pointer: string[]) {
+  console.log(pointer);
+
   while (pointer.length > 0 && collection) {
     const property = pointer.shift();
-    if (property !== '') {
-      collection = collection.get(property);
-    }
+    collection = collection.get(property);
   }
+  console.log(collection);
+
   return collection as Node;
 }
 
@@ -27,11 +29,11 @@ class OpenApi3DocumentConverter extends ApiDocumentConverter {
   walkPointers(pointerMap: PointerMap, handlers: ConverterHandlerMap) {
     pointerMap.forEach((pointerData, pointer) => {
       if (pointerData.schemaName) {
-        const parsedPointer = parse(pointer);
+        const parsedPointer = pointer === '/' ? [] : parse(pointer);
 
         const collection = getInCollection(
           this.document.contents as Collection,
-          parsedPointer
+          [...parsedPointer]
         ) as Collection;
 
         const blocks: IApiBlock[] = [];
@@ -54,10 +56,10 @@ class OpenApi3DocumentConverter extends ApiDocumentConverter {
             blocks.push(block);
           },
           get<TNode>(subPointer: string) {
-            return (getInCollection(collection, [
-              ...parsedPointer,
-              ...parse(subPointer),
-            ]) as unknown) as TNode;
+            return (getInCollection(
+              collection,
+              parse(subPointer)
+            ) as unknown) as TNode;
           },
         };
 
@@ -116,7 +118,7 @@ class OpenApi3DocumentConverter extends ApiDocumentConverter {
       OpenAPI: ({ add, block, get }) => {
         add(
           block('Heading', '/openapi', {
-            text: `openapi v${get<Scalar>('/openapi').value}`,
+            text: `openapi v${get<Scalar>('/openapi')}`,
             level: 'subtitle',
           })
         );
