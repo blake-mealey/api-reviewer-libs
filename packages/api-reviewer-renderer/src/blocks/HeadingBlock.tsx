@@ -1,24 +1,12 @@
 import React from 'react';
-import styled, { ThemeFonts } from 'styled-components';
-import { Text } from '../components/Text';
+import { Grid, Typography } from '@material-ui/core';
 
 type HeadingLevel = 'title' | 'subtitle';
 
-interface HeadingBlockProps {
+export interface HeadingBlockProps {
   text: string;
   level: HeadingLevel;
 }
-
-const levelToType: Record<HeadingLevel, keyof Omit<ThemeFonts, 'defaults'>> = {
-  title: 'h4',
-  subtitle: 'h6',
-};
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: row;
-  gap: ${p => p.theme.spacing(2)}px;
-`;
 
 export const HeadingBlock: React.FunctionComponent<HeadingBlockProps> = ({
   text,
@@ -26,9 +14,13 @@ export const HeadingBlock: React.FunctionComponent<HeadingBlockProps> = ({
   children,
 }) => {
   return (
-    <Container>
-      <Text type={levelToType[level]}>{text}</Text>
-      {children}
-    </Container>
+    <Grid container spacing={2} direction="row">
+      <Grid item>
+        <Typography variant={level === 'title' ? 'h4' : 'h6'}>
+          {text}
+        </Typography>
+      </Grid>
+      <Grid item>{children}</Grid>
+    </Grid>
   );
 };

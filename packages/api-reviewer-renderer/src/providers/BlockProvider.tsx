@@ -1,3 +1,4 @@
+import { Box } from '@material-ui/core';
 import { IApiBlock } from 'api-reviewer-converter/dist/api-document/IApiBlock';
 import React, { useContext } from 'react';
 import { FunctionComponent } from 'react';
@@ -16,8 +17,7 @@ export const useBlock = () => {
 };
 
 const Container = styled.div`
-  border-radius: ${p => p.theme.shape.roundness};
-  padding: ${p => p.theme.spacing(1)}px;
+  border-radius: ${p => p.theme.shape.borderRadius};
 
   &:hover {
     background-color: rgba(0, 0, 0, 0.025);
@@ -35,7 +35,9 @@ export const BlockProvider: FunctionComponent<BlockProviderProps> = ({
 }) => {
   return (
     <BlockContext.Provider value={block}>
-      <Container title={block.pointer}>{children}</Container>
+      <Container title={block.pointer}>
+        <Box p={1}>{children}</Box>
+      </Container>
     </BlockContext.Provider>
   );
 };

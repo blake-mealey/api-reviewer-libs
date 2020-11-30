@@ -3,9 +3,9 @@ import { IApiDocument } from 'api-reviewer-converter/dist/api-document/IApiDocum
 import { blocks } from './blocks';
 import { IApiBlock } from 'api-reviewer-converter/dist/api-document/IApiBlock';
 import { RootProvider } from './providers/RootProvider';
-import styled from 'styled-components';
 import { BlockProvider } from './providers/BlockProvider';
 import { PointerMapProvider } from './providers/PointerMapProvider';
+import { Box, Container, Grid } from '@material-ui/core';
 
 interface ApiDocumentProps {
   document: IApiDocument;
@@ -21,23 +21,17 @@ function renderBlock(
   }
 
   return (
-    <BlockProvider block={block} key={block.pointer}>
-      {React.createElement(
-        component,
-        block.data,
-        ...block.children.map(renderBlock)
-      )}
-    </BlockProvider>
+    <Grid item key={block.pointer}>
+      <BlockProvider block={block}>
+        {React.createElement(
+          component,
+          block.data,
+          ...block.children.map(renderBlock)
+        )}
+      </BlockProvider>
+    </Grid>
   );
 }
-
-const Container = styled.main`
-  display: flex;
-  flex-direction: column;
-  gap: ${p => p.theme.spacing(2)}px;
-  width: max(75%, 800px);
-  margin: ${p => p.theme.spacing(4)}px auto 0 auto;
-`;
 
 export const ApiDocument: React.FunctionComponent<ApiDocumentProps> = ({
   document,
@@ -47,7 +41,13 @@ export const ApiDocument: React.FunctionComponent<ApiDocumentProps> = ({
   return (
     <RootProvider>
       <PointerMapProvider pointerMap={document.pointerMap}>
-        <Container>{document.blocks.map(renderBlock)}</Container>
+        <Container maxWidth="md">
+          <Box mt={4}>
+            <Grid container direction="column" spacing={2}>
+              {document.blocks.map(renderBlock)}
+            </Grid>
+          </Box>
+        </Container>
       </PointerMapProvider>
     </RootProvider>
   );
