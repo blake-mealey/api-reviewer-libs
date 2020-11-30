@@ -12,13 +12,10 @@ import {
 } from '../ConverterHandler';
 
 function getInCollection(collection: Collection, pointer: string[]) {
-  console.log(pointer);
-
   while (pointer.length > 0 && collection) {
     const property = pointer.shift();
     collection = collection.get(property);
   }
-  console.log(collection);
 
   return collection as Node;
 }
@@ -140,19 +137,11 @@ class OpenApi3DocumentConverter extends ApiDocumentConverter {
           )
         );
 
-        const name = get<Scalar>('/license/name');
-        const url = get<Scalar>('/licence/url');
-        let licenseText: string;
-        if (name && url) {
-          licenseText = `License: [${name}](${url})`;
-        } else if (name) {
-          licenseText = `License: ${name}`;
-        } else if (url) {
-          licenseText = `License: <${url}>`;
-        }
         add(
-          block('Markdown', '/licence', {
-            text: licenseText,
+          block('Markdown', '/license', {
+            text: `License: [${get<Scalar>('/license/name')}](${get<Scalar>(
+              '/license/url'
+            )})`,
           })
         );
         add(

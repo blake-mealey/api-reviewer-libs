@@ -35,7 +35,7 @@ export const BlockProvider: FunctionComponent<BlockProviderProps> = ({
 }) => {
   return (
     <BlockContext.Provider value={block}>
-      <Container>{children}</Container>
+      <Container title={block.pointer}>{children}</Container>
     </BlockContext.Provider>
   );
 };

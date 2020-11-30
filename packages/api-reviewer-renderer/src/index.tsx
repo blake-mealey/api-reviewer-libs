@@ -5,6 +5,7 @@ import { IApiBlock } from 'api-reviewer-converter/dist/api-document/IApiBlock';
 import { RootProvider } from './providers/RootProvider';
 import styled from 'styled-components';
 import { BlockProvider } from './providers/BlockProvider';
+import { PointerMapProvider } from './providers/PointerMapProvider';
 
 interface ApiDocumentProps {
   document: IApiDocument;
@@ -45,7 +46,9 @@ export const ApiDocument: React.FunctionComponent<ApiDocumentProps> = ({
 
   return (
     <RootProvider>
-      <Container>{document.blocks.map(renderBlock)}</Container>
+      <PointerMapProvider pointerMap={document.pointerMap}>
+        <Container>{document.blocks.map(renderBlock)}</Container>
+      </PointerMapProvider>
     </RootProvider>
   );
 };
