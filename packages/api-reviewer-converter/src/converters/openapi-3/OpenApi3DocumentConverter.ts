@@ -6,18 +6,10 @@ import { PointerMap } from '../../api-document/IApiDocument';
 import { Collection, Node, Scalar } from 'yaml/types';
 import { parse } from 'json-pointer';
 import { IApiBlock } from '../../api-document/IApiBlock';
-
-interface IPointerCallbackContext {
-  node: Collection;
-  add(block: IApiBlock): void;
-  get<TNode extends Node>(pointer: string): TNode;
-  block(
-    type: string,
-    subPointer: string,
-    data: Record<string, any>,
-    children?: IApiBlock[]
-  ): IApiBlock;
-}
+import {
+  ConverterHandlerMap,
+  IConverterHandlerContext,
+} from '../ConverterHandler';
 
 function getInCollection(collection: Collection, pointer: string[]) {
   while (pointer.length > 0 && collection) {
@@ -32,50 +24,81 @@ function getInCollection(collection: Collection, pointer: string[]) {
 class OpenApi3DocumentConverter extends ApiDocumentConverter {
   convertInfoAndOpenApi() {}
 
-  walkPointers(
-    pointerMap: PointerMap,
-    handlers: Record<string, (context: IPointerCallbackContext) => void>
-  ) {
+  walkPointers(pointerMap: PointerMap, handlers: ConverterHandlerMap) {
     pointerMap.forEach((pointerData, pointer) => {
       if (pointerData.schemaName) {
+        const parsedPointer = parse(pointer);
+
+        const collection = getInCollection(
+          this.document.contents as Collection,
+          parsedPointer
+        ) as Collection;
+
+        const blocks: IApiBlock[] = [];
+
+        const context: IConverterHandlerContext = {
+          block(
+            type: string,
+            subPointer: string,
+            data: Record<string, any>,
+            children?: IApiBlock[]
+          ) {
+            return new ApiBlock(
+              type,
+              [...parsedPointer, ...parse(subPointer)],
+              data,
+              children
+            );
+          },
+          add(block: IApiBlock) {
+            blocks.push(block);
+          },
+          get<TNode>(subPointer: string) {
+            return (getInCollection(collection, [
+              ...parsedPointer,
+              ...parse(subPointer),
+            ]) as unknown) as TNode;
+          },
+        };
+
         const handler = handlers[pointerData.schemaName];
         if (handler) {
-          const parsedPointer = parse(pointer);
-
-          const collection = getInCollection(
-            this.document.contents as Collection,
-            parsedPointer
-          ) as Collection;
-
-          const blocks: IApiBlock[] = [];
-          handler({
-            node: collection,
-            block(
-              type: string,
-              subPointer: string,
-              data: Record<string, any>,
-              children?: IApiBlock[]
-            ) {
-              return new ApiBlock(
-                type,
-                [...parsedPointer, ...parse(subPointer)],
-                data,
-                children
-              );
-            },
-            add(block: IApiBlock) {
-              blocks.push(block);
-            },
-            get<TNode>(subPointer: string) {
-              return (getInCollection(collection, [
-                ...parsedPointer,
-                ...parse(subPointer),
-              ]) as unknown) as TNode;
-            },
-          });
-          this.builder.appendBlocks(blocks);
-          // TODO: If extensions, ...
+          handler(context);
         }
+
+        if (pointerData.supportsExtensions && this.options?.extensions) {
+          this.options.extensions
+            .filter(extension => pointerData.schemaName in extension.handlers)
+            .forEach(extension => {
+              const properties = Object.entries(extension.definition)
+                .filter(([k]) => k.includes('.'))
+                .flatMap(([, v]) =>
+                  Object.entries(v)
+                    .filter(([, schema]) => {
+                      const rules = schema.oas3;
+                      if (!rules || rules.usage === 'prohibited') {
+                        return false;
+                      }
+
+                      return (
+                        rules.usage === 'unrestricted' ||
+                        (rules.usage === 'restricted' &&
+                          rules.objectTypes?.includes(pointerData.schemaName))
+                      );
+                    })
+                    .map(([property]) => property)
+                );
+
+              properties.forEach(property => {
+                if (collection.has(property)) {
+                  const handler = extension.handlers[pointerData.schemaName];
+                  handler(context);
+                }
+              });
+            });
+        }
+
+        this.builder.appendBlocks(blocks);
       }
     });
   }

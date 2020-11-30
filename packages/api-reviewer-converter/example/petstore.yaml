@@ -1,10 +1,14 @@
 openapi: 3.0.0
 info:
   version: 1.0.0
-  title: Swagger Petstore
+  # title: Swagger Petstore
   description: This is a description
   license:
     name: MIT
+  x-logo:
+    url: https://github.com/Redocly/redoc
+    href: http://localhost:1234
+    altText: The logo
 servers:
   - url: http://petstore.swagger.io/v1
 paths:

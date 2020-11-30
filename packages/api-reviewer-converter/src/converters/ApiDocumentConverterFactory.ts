@@ -1,12 +1,15 @@
 import { parseDocument } from 'yaml';
 import ApiDocumentConverter from './ApiDocumentConverter';
+import { IConverterOptions } from './IConverterOptions';
 import OpenApi3DocumentConverter from './openapi-3/OpenApi3DocumentConverter';
 
 class ApiDocumentConverterFactory {
   protected documentString: string;
+  protected options: IConverterOptions;
 
-  constructor(documentString: string) {
+  constructor(documentString: string, options: IConverterOptions) {
     this.documentString = documentString;
+    this.options = options;
   }
 
   createConverter(): ApiDocumentConverter {
@@ -17,7 +20,11 @@ class ApiDocumentConverterFactory {
     if (isOpenApi) {
       const version: string = document.get('openapi');
       if (version.startsWith('3.')) {
-        return new OpenApi3DocumentConverter(this.documentString, document);
+        return new OpenApi3DocumentConverter(
+          this.documentString,
+          document,
+          this.options
+        );
       }
     }
 

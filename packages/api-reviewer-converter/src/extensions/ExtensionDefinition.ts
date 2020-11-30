@@ -17,7 +17,7 @@ interface ISpecUsage {
   objectTypes?: string[];
 }
 
-interface IExtensionProperty {
+export interface IExtensionProperty {
   summary?: string;
   description?: string;
   externalDocs?: IExtensionDocs;
@@ -26,6 +26,8 @@ interface IExtensionProperty {
   oas2: ISpecUsage;
   oas3: ISpecUsage;
 }
+
+export type SpecTypes = keyof Pick<IExtensionProperty, 'oas2' | 'oas3'>;
 
 interface IExtensionNamespace extends Record<string, IExtensionProperty> {}
 
@@ -38,24 +40,6 @@ interface IExtensionDefinition {
   };
 }
 
-type ExtensionDefinition = IExtensionDefinition & {
+export type ExtensionDefinition = IExtensionDefinition & {
   [namespace: string]: IExtensionNamespace;
-};
-
-let x: ExtensionDefinition;
-x['com.readme'] = {
-  'x-explorer-enabled': {
-    schema: {
-      type: 'boolean',
-      default: true,
-    },
-    oas2: {
-      usage: 'restricted',
-      objectTypes: ['OperationObject'],
-    },
-    oas3: {
-      usage: 'restricted',
-      objectTypes: ['OperationObject'],
-    },
-  },
 };
