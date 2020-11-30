@@ -2,11 +2,11 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import { useBlock } from '../providers/BlockProvider';
 
-interface ParagraphBlockProps {
+export interface MarkdownBlockProps {
   text: string;
 }
 
-export const ParagraphBlock: React.FunctionComponent<ParagraphBlockProps> = ({
+export const MarkdownBlock: React.FunctionComponent<MarkdownBlockProps> = ({
   text,
 }) => {
   const block = useBlock();

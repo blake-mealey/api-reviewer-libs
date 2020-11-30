@@ -70,7 +70,7 @@ async function main() {
         handlers: {
           Info({ add, block, get }) {
             add(
-              block('Paragraph', '/x-logo', {
+              block('Markdown', '/x-logo', {
                 text: `[![${get('/x-logo/altText')}](${get(
                   '/x-logo/url'
                 )})](${get('/x-logo/href')})`,

@@ -151,12 +151,12 @@ class OpenApi3DocumentConverter extends ApiDocumentConverter {
           licenseText = `License: <${url}>`;
         }
         add(
-          block('Paragraph', '/licence', {
+          block('Markdown', '/licence', {
             text: licenseText,
           })
         );
         add(
-          block('Paragraph', '/description', {
+          block('Markdown', '/description', {
             text: get<Scalar>('/description'),
           })
         );
