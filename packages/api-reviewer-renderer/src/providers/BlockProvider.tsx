@@ -1,6 +1,6 @@
-import { Box } from '@material-ui/core';
+import { Box, Button, Popover } from '@material-ui/core';
 import { IApiBlock } from 'api-reviewer-converter/dist/api-document/IApiBlock';
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { FunctionComponent } from 'react';
 import styled from 'styled-components';
 
@@ -33,11 +33,31 @@ export const BlockProvider: FunctionComponent<BlockProviderProps> = ({
   block,
   children,
 }) => {
+  const [actionsAnchorEl, setActionsAnchorEl] = useState<HTMLElement | null>(
+    null
+  );
+  const actionsOpen = Boolean(actionsAnchorEl);
+  console.log(actionsOpen);
+
   return (
     <BlockContext.Provider value={block}>
-      <Container title={block.pointer}>
+      <Container
+        title={block.pointer}
+        onMouseEnter={e => setActionsAnchorEl(e.currentTarget)}
+        onMouseLeave={() => setActionsAnchorEl(null)}
+      >
         <Box p={1}>{children}</Box>
       </Container>
+      <Popover
+        open={actionsOpen}
+        anchorEl={actionsAnchorEl}
+        anchorOrigin={{ vertical: 'center', horizontal: 'left' }}
+        transformOrigin={{ vertical: 'center', horizontal: 'right' }}
+        onClose={() => setActionsAnchorEl(null)}
+        disableRestoreFocus
+      >
+        <Button>+</Button>
+      </Popover>
     </BlockContext.Provider>
   );
 };
