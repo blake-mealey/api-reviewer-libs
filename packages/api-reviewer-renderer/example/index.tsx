@@ -6,6 +6,8 @@ import { convert } from 'api-reviewer-converter';
 import { IApiDocument } from 'api-reviewer-converter/dist/api-document/IApiDocument';
 import { IConverterOptions } from 'api-reviewer-converter/dist/converters/IConverterOptions';
 import AddCommentIcon from '@material-ui/icons/AddCommentOutlined';
+import { Box, Container } from '@material-ui/core';
+import styled from 'styled-components';
 
 const data = `openapi: 3.0.0
 info:
@@ -201,29 +203,66 @@ const options: IConverterOptions = {
   ],
 };
 
+const Layout = styled(Box)`
+  gap: 16px;
+`;
+
 const App = () => {
   const [document, setDocument] = React.useState<IApiDocument | null>(null);
+  const [dataLines, setDataLines] = React.useState<[number?, number?][]>([]);
 
   React.useEffect(() => {
     convert(data, options).then(setDocument);
   }, []);
 
+  React.useEffect(() => {
+    window.Prism.highlightAll();
+  }, [dataLines]);
+
   return (
-    <div>
-      {document ? (
-        <ApiDocument
-          document={document}
-          actions={[
-            {
-              icon: <AddCommentIcon />,
-              onClick(block) {
-                console.log(block);
-              },
-            },
-          ]}
-        />
-      ) : null}
-    </div>
+    <Container maxWidth="xl">
+      <Layout mt={4} display="flex" flexDirection="row">
+        <Box width="50%">
+          {document ? (
+            <ApiDocument
+              document={document}
+              actions={[
+                {
+                  icon: <AddCommentIcon />,
+                  onClick(block) {
+                    console.log(block);
+                  },
+                },
+              ]}
+              onBlockFocus={block => {
+                if (block) {
+                  const pointerData = document.pointerMap.get(block.pointer);
+
+                  const x = [
+                    pointerData?.fullRange[0].line,
+                    pointerData?.fullRange[1].line,
+                  ];
+                  console.log(x);
+
+                  setDataLines([x]);
+                } else {
+                  setDataLines([]);
+                }
+              }}
+            />
+          ) : null}
+        </Box>
+
+        <Box width="50%">
+          <pre
+            data-line={dataLines.map(lines => lines.join('-')).join(',')}
+            className="line-numbers"
+          >
+            <code className="language-yaml">{data}</code>
+          </pre>
+        </Box>
+      </Layout>
+    </Container>
   );
 };
 

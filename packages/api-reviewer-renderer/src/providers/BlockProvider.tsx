@@ -81,11 +81,13 @@ const ActionGroup = React.forwardRef<HTMLButtonElement, ActionGroupProps>(
 export interface BlockProviderProps {
   block: IApiBlock;
   actions?: BlockAction[];
+  onBlockFocus?(block?: IApiBlock): void;
 }
 
 export const BlockProvider: FunctionComponent<BlockProviderProps> = ({
   block,
   actions,
+  onBlockFocus,
   children,
 }) => {
   const [actionsOpen, setActionsOpen] = useState<boolean>(false);
@@ -93,12 +95,18 @@ export const BlockProvider: FunctionComponent<BlockProviderProps> = ({
 
   const openActions = () => {
     setActionsOpen(true);
+    if (onBlockFocus) {
+      onBlockFocus(block);
+    }
   };
   const closeActions = (
     e: React.MouseEvent<HTMLElement, MouseEvent> | React.FocusEvent<HTMLElement>
   ) => {
     if (e.relatedTarget !== actionsGroupRef.current) {
       setActionsOpen(false);
+      if (onBlockFocus) {
+        onBlockFocus(undefined);
+      }
     }
   };
 
