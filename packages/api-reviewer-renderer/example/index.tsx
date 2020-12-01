@@ -13,7 +13,8 @@ const data = `openapi: 3.0.0
 info:
   version: 1.0.0
   title: Swagger Petstore
-  description: This is a description
+  description: |
+    A _really_ **great** description!
   license:
     name: MIT
   x-logo:
@@ -238,13 +239,12 @@ const App = () => {
                 if (block) {
                   const pointerData = document.pointerMap.get(block.pointer);
 
-                  const x = [
-                    pointerData?.fullRange[0].line,
-                    pointerData?.fullRange[1].line,
-                  ];
-                  console.log(x);
+                  const lines = pointerData?.fullRange.map(r => r.line);
+                  if (lines[0] !== lines[1]) {
+                    lines[1]--;
+                  }
 
-                  setDataLines([x]);
+                  setDataLines([lines]);
                 } else {
                   setDataLines([]);
                 }
