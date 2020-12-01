@@ -3,13 +3,14 @@ import ApiDocumentConverter from '../ApiDocumentConverter';
 import { PointerMapFactory } from '../PointerMapFactory';
 import { schema } from './schema';
 import { PointerMap } from '../../api-document/IApiDocument';
-import { Collection, Node, Scalar } from 'yaml/types';
+import { Collection, Node } from 'yaml/types';
 import { parse } from 'json-pointer';
 import { IApiBlock } from '../../api-document/IApiBlock';
 import {
   ConverterHandlerMap,
   IConverterHandlerContext,
 } from '../ConverterHandler';
+import * as handlers from './handlers';
 
 function getInCollection(collection: Collection, pointer: string[]) {
   while (pointer.length > 0 && collection) {
@@ -57,6 +58,18 @@ class OpenApi3DocumentConverter extends ApiDocumentConverter {
               collection,
               parse(subPointer)
             ) as unknown) as TNode;
+          },
+          has<TNode extends Node>(
+            subPointer: string,
+            callback: (node: TNode) => void
+          ) {
+            const node = (getInCollection(
+              collection,
+              parse(subPointer)
+            ) as unknown) as TNode;
+            if (node) {
+              callback(node);
+            }
           },
         };
 
@@ -111,46 +124,7 @@ class OpenApi3DocumentConverter extends ApiDocumentConverter {
 
     this.builder.setPointerMap(pointerMap);
 
-    this.walkPointers(pointerMap, {
-      OpenAPI: ({ add, block, get }) => {
-        add(
-          block('Heading', '/openapi', {
-            text: `openapi v${get<Scalar>('/openapi')}`,
-            level: 'subtitle',
-          })
-        );
-      },
-      Info: ({ add, get, block }) => {
-        add(
-          block(
-            'Heading',
-            '/title',
-            {
-              text: get<Scalar>('/title') ?? '_No Title_',
-              level: 'title',
-            },
-            [
-              block('Tag', '/version', {
-                text: get<Scalar>('/version') ?? '_No Version_',
-              }),
-            ]
-          )
-        );
-
-        add(
-          block('Markdown', '/license', {
-            text: `License: [${get<Scalar>('/license/name')}](${get<Scalar>(
-              '/license/url'
-            )})`,
-          })
-        );
-        add(
-          block('Markdown', '/description', {
-            text: get<Scalar>('/description'),
-          })
-        );
-      },
-    });
+    this.walkPointers(pointerMap, handlers);
 
     return this.builder.build();
   }

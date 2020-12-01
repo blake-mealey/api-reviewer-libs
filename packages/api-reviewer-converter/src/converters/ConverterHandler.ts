@@ -3,7 +3,8 @@ import { IApiBlock } from '../api-document/IApiBlock';
 
 export interface IConverterHandlerContext {
   add(block: IApiBlock): void;
-  get<TNode extends Node>(pointer: string): TNode;
+  has<TNode extends Node>(subPointer: string, callback: (node: TNode) => void);
+  get<TNode extends Node>(subPointer: string): TNode;
   block(
     type: string,
     subPointer: string,
