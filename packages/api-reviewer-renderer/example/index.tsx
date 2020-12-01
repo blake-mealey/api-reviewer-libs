@@ -5,7 +5,7 @@ import { ApiDocument } from '../.';
 import { convert } from 'api-reviewer-converter';
 import { IApiDocument } from 'api-reviewer-converter/dist/api-document/IApiDocument';
 import { IConverterOptions } from 'api-reviewer-converter/dist/converters/IConverterOptions';
-import AddIcon from '@material-ui/icons/Add';
+import AddCommentIcon from '@material-ui/icons/AddCommentOutlined';
 
 const data = `openapi: 3.0.0
 info:
@@ -215,7 +215,7 @@ const App = () => {
           document={document}
           actions={[
             {
-              icon: <AddIcon />,
+              icon: <AddCommentIcon />,
               onClick(block) {
                 console.log(block);
               },

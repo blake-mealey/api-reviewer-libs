@@ -1,6 +1,6 @@
-import { Box, Button, Grid, Popper } from '@material-ui/core';
+import { Box, Button, Fade, Grid } from '@material-ui/core';
 import { IApiBlock } from 'api-reviewer-converter/dist/api-document/IApiBlock';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { FunctionComponent } from 'react';
 import styled from 'styled-components';
 
@@ -17,21 +17,30 @@ export const useBlock = () => {
 };
 
 const Container = styled.div`
-  border-radius: ${p => p.theme.shape.borderRadius};
+  border-radius: ${p => p.theme.shape.borderRadius}px;
+  transition: ease-in-out 0.1s;
 
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.025);
-    box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
+  &:hover,
+  &:focus,
+  &.focused {
+    background-color: rgba(0, 0, 0, 0.01);
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.15);
+    outline: none;
   }
+`;
+
+const ActionGroupBox = styled(Box)`
+  transform: translate(0, -50%);
 `;
 
 const ActionButton = styled(Button)`
   min-width: 0;
-  padding: 0;
+  padding: ${p => p.theme.spacing(1)}px;
 
-  transform: scale(0.8);
-  &:hover {
-    transform: scale(1);
+  transform: scale(0.6);
+  &:hover,
+  &:focus {
+    transform: scale(0.8);
   }
 `;
 
@@ -39,6 +48,35 @@ export interface BlockAction {
   icon: React.Component;
   onClick(block: IApiBlock): void;
 }
+
+interface ActionGroupProps {
+  onActionClick(action: BlockAction): void;
+  actions: BlockAction[];
+}
+
+const ActionGroup = React.forwardRef<HTMLButtonElement, ActionGroupProps>(
+  ({ actions, onActionClick, ...props }, ref) => {
+    return (
+      <ActionGroupBox position="absolute" top="50%" right="100%" {...props}>
+        <Grid container direction="row" spacing={1}>
+          {actions?.map((action, i) => (
+            <Grid item key={i}>
+              <ActionButton
+                ref={ref}
+                variant="contained"
+                color="secondary"
+                disableFocusRipple
+                onClick={() => onActionClick(action)}
+              >
+                {action.icon}
+              </ActionButton>
+            </Grid>
+          )) ?? null}
+        </Grid>
+      </ActionGroupBox>
+    );
+  }
+);
 
 export interface BlockProviderProps {
   block: IApiBlock;
@@ -50,38 +88,43 @@ export const BlockProvider: FunctionComponent<BlockProviderProps> = ({
   actions,
   children,
 }) => {
-  const [actionsAnchorEl, setActionsAnchorEl] = useState<HTMLElement | null>(
-    null
-  );
-  const actionsOpen = Boolean(actionsAnchorEl);
+  const [actionsOpen, setActionsOpen] = useState<boolean>(false);
+  const actionsGroupRef = useRef<HTMLButtonElement | null>(null);
 
-  const openActions = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
-    setActionsAnchorEl(e.currentTarget);
+  const openActions = () => {
+    setActionsOpen(true);
   };
-  const closeActions = () => {
-    setActionsAnchorEl(null);
+  const closeActions = (
+    e: React.MouseEvent<HTMLElement, MouseEvent> | React.FocusEvent<HTMLElement>
+  ) => {
+    if (e.relatedTarget !== actionsGroupRef.current) {
+      setActionsOpen(false);
+    }
   };
 
   return (
     <BlockContext.Provider value={block}>
-      <Container onMouseEnter={openActions} onMouseLeave={closeActions}>
-        <Box p={1}>{children}</Box>
-        <Popper open={actionsOpen} anchorEl={actionsAnchorEl} placement="left">
-          <Grid container direction="row" spacing={1}>
-            {actions?.map((action, i) => (
-              <Grid item key={i}>
-                <ActionButton
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => action.onClick(block)}
-                >
-                  {action.icon}
-                </ActionButton>
-              </Grid>
-            )) ?? null}
-          </Grid>
-        </Popper>
-      </Container>
+      <Box position="relative">
+        <Container
+          className={actionsOpen ? 'focused' : undefined}
+          tabIndex={0}
+          onMouseEnter={openActions}
+          onMouseLeave={closeActions}
+          onFocus={openActions}
+          onBlur={closeActions}
+        >
+          {actions ? (
+            <Fade in={actionsOpen} timeout={200}>
+              <ActionGroup
+                ref={actionsGroupRef}
+                actions={actions}
+                onActionClick={action => action.onClick(block)}
+              />
+            </Fade>
+          ) : null}
+          <Box p={1}>{children}</Box>
+        </Container>
+      </Box>
     </BlockContext.Provider>
   );
 };
