@@ -1,12 +1,5 @@
 import React from 'react';
-import ReactMarkdown from 'react-markdown';
-import styled from 'styled-components';
-
-const StyledMarkdown = styled(ReactMarkdown)`
-  img {
-    max-width: 100%;
-  }
-`;
+import { Markdown } from '../components/Markdown';
 
 export interface MarkdownBlockProps {
   text: string;
@@ -15,5 +8,5 @@ export interface MarkdownBlockProps {
 export const MarkdownBlock: React.FunctionComponent<MarkdownBlockProps> = ({
   text,
 }) => {
-  return <StyledMarkdown>{text}</StyledMarkdown>;
+  return <Markdown markdown={text} />;
 };

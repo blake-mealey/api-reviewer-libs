@@ -13,7 +13,10 @@ export function Info({ get, has, add, block }: IConverterHandlerContext) {
   has<Scalar>('/version', version =>
     add(
       block('Markdown', '/version', {
-        text: `Version: ${version}`,
+        text: `
+|Version   |
+|----------|
+|${version}|`,
       })
     )
   );
@@ -26,7 +29,10 @@ export function Info({ get, has, add, block }: IConverterHandlerContext) {
     if (text) {
       add(
         block('Markdown', '/license', {
-          text: `License: ${text}`,
+          text: `
+|License|
+|-------|
+|${text}|`,
         })
       );
     }
