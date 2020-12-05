@@ -208,11 +208,64 @@ const Layout = styled(Box)`
   gap: 16px;
 `;
 
+interface MemoizedApiDocumentProps {
+  document?: IApiDocument;
+  setHighlightedLines(lines: [number?, number?][]): void;
+}
+
+// TODO: Move memoization to lib?
+const MemoizedApiDocument = React.memo<MemoizedApiDocumentProps>(
+  ({ document, setHighlightedLines }) => {
+    // TODO: Move loading logic to lib?
+    if (!document) {
+      return <div>Loading...</div>;
+    }
+
+    return (
+      <ApiDocument
+        document={document}
+        actions={[
+          {
+            icon: <AddCommentIcon />,
+            onClick(block) {
+              console.log(block);
+            },
+          },
+        ]}
+        onBlockFocus={block => {
+          if (block) {
+            const pointerData = document.pointerMap.get(block.pointer);
+
+            const lines = pointerData?.fullRange.map(r => r.line) as [
+              number,
+              number
+            ];
+            if (!lines) {
+              return;
+            }
+
+            if (lines[0] !== lines[1]) {
+              lines[1]--;
+            }
+
+            setHighlightedLines([lines]);
+          } else {
+            setHighlightedLines([]);
+          }
+        }}
+      />
+    );
+  }
+);
+
 const App = () => {
-  const [document, setDocument] = React.useState<IApiDocument | null>(null);
+  const [document, setDocument] = React.useState<IApiDocument | undefined>(
+    undefined
+  );
   const [dataLines, setDataLines] = React.useState<[number?, number?][]>([]);
 
   React.useEffect(() => {
+    // TODO: Move conversion logic to lib?
     convert(data, options).then(setDocument);
   }, []);
 
@@ -224,33 +277,10 @@ const App = () => {
     <Container maxWidth="xl">
       <Layout mt={4} display="flex" flexDirection="row">
         <Box width="50%">
-          {document ? (
-            <ApiDocument
-              document={document}
-              actions={[
-                {
-                  icon: <AddCommentIcon />,
-                  onClick(block) {
-                    console.log(block);
-                  },
-                },
-              ]}
-              onBlockFocus={block => {
-                if (block) {
-                  const pointerData = document.pointerMap.get(block.pointer);
-
-                  const lines = pointerData?.fullRange.map(r => r.line);
-                  if (lines[0] !== lines[1]) {
-                    lines[1]--;
-                  }
-
-                  setDataLines([lines]);
-                } else {
-                  setDataLines([]);
-                }
-              }}
-            />
-          ) : null}
+          <MemoizedApiDocument
+            document={document}
+            setHighlightedLines={setDataLines}
+          />
         </Box>
 
         <Box width="50%">
