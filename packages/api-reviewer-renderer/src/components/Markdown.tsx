@@ -1,6 +1,5 @@
 import {
   Link,
-  Paper,
   Table,
   TableBody,
   TableCell,
@@ -39,24 +38,19 @@ const renderers: { [nodeType: string]: ElementType } = {
   link({ href, children }) {
     return <Link href={href}>{children}</Link>;
   },
-  table({ children, ...props }) {
-    console.log(props);
+  table({ children }) {
     return <Table>{children}</Table>;
   },
-  tableHead({ children, ...props }) {
-    console.log(props);
+  tableHead({ children }) {
     return <TableHead>{children}</TableHead>;
   },
-  tableBody({ children, ...props }) {
-    console.log(props);
+  tableBody({ children }) {
     return <TableBody>{children}</TableBody>;
   },
-  tableRow({ children, ...props }) {
-    console.log(props);
+  tableRow({ children }) {
     return <TableRow>{children}</TableRow>;
   },
-  tableCell({ children, align, ...props }) {
-    console.log(props);
+  tableCell({ children, align }) {
     return <TableCell align={align ?? 'inherit'}>{children}</TableCell>;
   },
 };
