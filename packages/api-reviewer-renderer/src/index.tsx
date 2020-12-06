@@ -30,19 +30,18 @@ export const ApiDocument: React.FunctionComponent<ApiDocumentProps> = ({
     }
 
     return (
-      <Grid item key={block.pointer}>
-        <BlockProvider
-          block={block}
-          actions={actions}
-          onBlockFocus={onBlockFocus}
-        >
-          {React.createElement(
-            component,
-            block.data,
-            ...block.children.map(block => renderBlock(block))
-          )}
-        </BlockProvider>
-      </Grid>
+      <BlockProvider
+        key={block.pointer}
+        block={block}
+        actions={actions}
+        onBlockFocus={onBlockFocus}
+      >
+        {React.createElement(
+          component,
+          block.data,
+          ...block.children.map(block => renderBlock(block))
+        )}
+      </BlockProvider>
     );
   }
 
@@ -51,7 +50,11 @@ export const ApiDocument: React.FunctionComponent<ApiDocumentProps> = ({
       <PointerMapProvider pointerMap={document.pointerMap}>
         <Box pl={2}>
           <Grid container direction="column" spacing={2}>
-            {document.blocks.map(block => renderBlock(block))}
+            {document.blocks.map(block => (
+              <Grid item key={block.pointer}>
+                {renderBlock(block)}
+              </Grid>
+            ))}
           </Grid>
         </Box>
       </PointerMapProvider>
