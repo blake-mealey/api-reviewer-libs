@@ -112,27 +112,31 @@ export const BlockProvider: FunctionComponent<BlockProviderProps> = ({
 
   return (
     <BlockContext.Provider value={block}>
-      <Box position="relative">
-        <Container
-          className={actionsOpen ? 'focused' : undefined}
-          tabIndex={0}
-          onMouseEnter={openActions}
-          onMouseLeave={closeActions}
-          onFocus={openActions}
-          onBlur={closeActions}
-        >
-          {actions ? (
-            <Fade in={actionsOpen} timeout={200}>
-              <ActionGroup
-                ref={actionsGroupRef}
-                actions={actions}
-                onActionClick={action => action.onClick(block)}
-              />
-            </Fade>
-          ) : null}
-          <Box p={1}>{children}</Box>
-        </Container>
-      </Box>
+      {block.pointer ? (
+        <Box position="relative">
+          <Container
+            className={actionsOpen ? 'focused' : undefined}
+            tabIndex={0}
+            onMouseEnter={openActions}
+            onMouseLeave={closeActions}
+            onFocus={openActions}
+            onBlur={closeActions}
+          >
+            {actions ? (
+              <Fade in={actionsOpen} timeout={200}>
+                <ActionGroup
+                  ref={actionsGroupRef}
+                  actions={actions}
+                  onActionClick={action => action.onClick(block)}
+                />
+              </Fade>
+            ) : null}
+            <Box p={1}>{children}</Box>
+          </Container>
+        </Box>
+      ) : (
+        children
+      )}
     </BlockContext.Provider>
   );
 };

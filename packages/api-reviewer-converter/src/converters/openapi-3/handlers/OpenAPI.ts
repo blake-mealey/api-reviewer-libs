@@ -5,7 +5,7 @@ export function OpenAPI({ has, add, block }: IConverterHandlerContext) {
   has<Scalar>('/openapi', openapi =>
     add(
       block('Markdown', '/openapi', {
-        text: `### openapi v${openapi}`,
+        text: `###### openapi v${openapi}`,
       })
     )
   );

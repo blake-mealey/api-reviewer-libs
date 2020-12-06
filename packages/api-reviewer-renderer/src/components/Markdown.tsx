@@ -1,4 +1,4 @@
-import { Typography } from '@material-ui/core';
+import { Link, Typography } from '@material-ui/core';
 import React, { ElementType } from 'react';
 import ReactMarkdown from 'react-markdown';
 import gfm from 'remark-gfm';
@@ -26,6 +26,9 @@ const renderers: { [nodeType: string]: ElementType } = {
   },
   paragraph: ({ children }) => {
     return <Typography variant="body1">{children}</Typography>;
+  },
+  link: ({ href, children }) => {
+    return <Link href={href}>{children}</Link>;
   },
 };
 

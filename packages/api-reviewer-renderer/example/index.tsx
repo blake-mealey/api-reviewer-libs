@@ -17,6 +17,7 @@ info:
     A _really_ **great** description!
   license:
     name: MIT
+    url: https://example.com/license
   x-logo:
     url: https://redocly.github.io/redoc/petstore-logo.png
     href: http://localhost:1234

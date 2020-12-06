@@ -4,6 +4,6 @@ import { IPointerData } from './IPointerData';
 export type PointerMap = Map<string, IPointerData>;
 
 export interface IApiDocument {
-  blocks: IApiBlock[];
+  rootBlock: IApiBlock;
   pointerMap: PointerMap;
 }

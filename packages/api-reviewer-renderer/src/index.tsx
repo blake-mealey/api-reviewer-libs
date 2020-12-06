@@ -5,7 +5,7 @@ import { IApiBlock } from 'api-reviewer-converter/dist/api-document/IApiBlock';
 import { RootProvider } from './providers/RootProvider';
 import { BlockAction, BlockProvider } from './providers/BlockProvider';
 import { PointerMapProvider } from './providers/PointerMapProvider';
-import { Grid, Box } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 
 interface ApiDocumentProps {
   document: IApiDocument;
@@ -48,15 +48,7 @@ export const ApiDocument: React.FunctionComponent<ApiDocumentProps> = ({
   return (
     <RootProvider>
       <PointerMapProvider pointerMap={document.pointerMap}>
-        <Box pl={2}>
-          <Grid container direction="column" spacing={2}>
-            {document.blocks.map(block => (
-              <Grid item key={block.pointer}>
-                {renderBlock(block)}
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
+        <Box pl={2}>{renderBlock(document.rootBlock)}</Box>
       </PointerMapProvider>
     </RootProvider>
   );

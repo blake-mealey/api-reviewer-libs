@@ -1,3 +1,4 @@
+import { ApiBlock } from '../api-document/ApiBlock';
 import { IApiBlock } from '../api-document/IApiBlock';
 import { IApiDocument, PointerMap } from '../api-document/IApiDocument';
 
@@ -20,7 +21,7 @@ class ApiDocumentBuilder {
 
   build(): IApiDocument {
     return {
-      blocks: this.blocks,
+      rootBlock: new ApiBlock('Column', null, {}, this.blocks),
       pointerMap: this.pointerMap,
     };
   }
