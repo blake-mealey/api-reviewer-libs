@@ -9,4 +9,8 @@ export function OpenAPI({ has, add, block }: IConverterHandlerContext) {
       })
     )
   );
+
+  has('/servers', () => {
+    add(block('Markdown', null, { text: '## Servers' }));
+  });
 }
