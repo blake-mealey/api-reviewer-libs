@@ -4,8 +4,8 @@ import { Scalar } from 'yaml/types';
 export function Info({ get, has, add, block }: IConverterHandlerContext) {
   has<Scalar>('/title', title =>
     add(
-      block('Heading', '/title', {
-        text: title,
+      block('Markdown', '/title', {
+        text: `# ${title}`,
       })
     )
   );
