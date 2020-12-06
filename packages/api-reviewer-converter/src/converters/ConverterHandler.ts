@@ -7,7 +7,7 @@ export interface IConverterHandlerContext {
   get<TNode extends Node>(subPointer: string): TNode;
   block(
     type: string,
-    subPointer: string,
+    subPointer: string | null,
     data: Record<string, any>,
     children?: IApiBlock[]
   ): IApiBlock;

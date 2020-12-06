@@ -1,5 +1,5 @@
 import { IConverterHandlerContext } from '../../ConverterHandler';
-import { Scalar } from 'yaml/types';
+import { Scalar, YAMLMap } from 'yaml/types';
 
 export function Info({ get, has, add, block }: IConverterHandlerContext) {
   has<Scalar>('/title', title =>
@@ -10,33 +10,38 @@ export function Info({ get, has, add, block }: IConverterHandlerContext) {
     )
   );
 
-  has<Scalar>('/version', version =>
-    add(
-      block('Markdown', '/version', {
-        text: `
+  const version = get<Scalar>('/version');
+
+  const license = get<YAMLMap>('/license');
+  const licenseName = license.get('name');
+  const licenseUrl = license.get('url');
+
+  add(
+    block('Row', null, {}, [
+      version
+        ? block('Markdown', '/version', {
+            text: `
 |Version   |
 |----------|
 |${version}|`,
-      })
-    )
-  );
-
-  has('/license', () => {
-    const name = get<Scalar>('/license/name');
-    const url = get<Scalar>('/license/url');
-    const text =
-      name && url ? `[${name}](${url})` : name ? name : url ? `<${url}>` : null;
-    if (text) {
-      add(
-        block('Markdown', '/license', {
-          text: `
+          })
+        : null,
+      licenseName || licenseUrl
+        ? block('Markdown', '/license', {
+            text: `
 |License|
 |-------|
-|${text}|`,
-        })
-      );
-    }
-  });
+|${
+              licenseName && licenseUrl
+                ? `[${licenseName}](${licenseUrl})`
+                : licenseName
+                ? licenseName
+                : `<${licenseUrl}>`
+            }|`,
+          })
+        : null,
+    ])
+  );
 
   has<Scalar>('/description', description =>
     add(

@@ -39,13 +39,13 @@ class OpenApi3DocumentConverter extends ApiDocumentConverter {
         const context: IConverterHandlerContext = {
           block(
             type: string,
-            subPointer: string,
+            subPointer: string | null,
             data: Record<string, any>,
             children?: IApiBlock[]
           ) {
             return new ApiBlock(
               type,
-              [...parsedPointer, ...parse(subPointer)],
+              subPointer ? [...parsedPointer, ...parse(subPointer)] : null,
               data,
               children
             );

@@ -1,8 +1,8 @@
 export type ApiBlockData = Record<string, any>;
 
 export interface IApiBlock {
-  pointer: string;
   type: string;
+  pointer?: string;
   data: ApiBlockData;
   children: IApiBlock[];
 }
