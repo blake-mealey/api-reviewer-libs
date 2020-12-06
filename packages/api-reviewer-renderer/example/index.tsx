@@ -6,7 +6,7 @@ import { convert } from 'api-reviewer-converter';
 import { IApiDocument } from 'api-reviewer-converter/dist/api-document/IApiDocument';
 import { IConverterOptions } from 'api-reviewer-converter/dist/converters/IConverterOptions';
 import AddCommentIcon from '@material-ui/icons/AddCommentOutlined';
-import { Box, Container } from '@material-ui/core';
+import { CircularProgress, Box, Container } from '@material-ui/core';
 import styled from 'styled-components';
 
 const data = `openapi: 3.0.0
@@ -1279,7 +1279,7 @@ const MemoizedApiDocument = React.memo<MemoizedApiDocumentProps>(
   ({ document, setHighlightedLines }) => {
     // TODO: Move loading logic to lib?
     if (!document) {
-      return <div>Loading...</div>;
+      return <CircularProgress />;
     }
 
     return (

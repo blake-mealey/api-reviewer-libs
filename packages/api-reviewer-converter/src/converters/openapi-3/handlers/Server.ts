@@ -11,7 +11,7 @@ export function Server({ has, get, add, block }: IConverterHandlerContext) {
             text: `
 |URL   |
 |----------|
-|<${url}>|`,
+|[${url}](${url})|`,
           })
         : null,
       description
