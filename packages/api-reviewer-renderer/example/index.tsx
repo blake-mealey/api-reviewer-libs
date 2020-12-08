@@ -76,14 +76,16 @@ const options: IConverterOptions = {
         },
       },
       handlers: {
-        Info({ add, block, get }) {
-          add(
-            block('Markdown', '/x-logo', {
-              text: `[![${get('/x-logo/altText')}](${get(
-                '/x-logo/url'
-              )})](${get('/x-logo/href')})`,
-            })
-          );
+        Info({ is, subPointer, add, block }) {
+          is('/x-logo', logo => {
+            add(
+              block('Markdown', subPointer, {
+                text: `[![${logo.get('altText')}](${logo.get(
+                  'url'
+                )})](${logo.get('href')})`,
+              })
+            );
+          });
         },
       },
     },
@@ -92,10 +94,6 @@ const options: IConverterOptions = {
 
 const Layout = styled(Box)`
   gap: 16px;
-`;
-
-const MarkedLine = styled.div`
-  background-color: red;
 `;
 
 interface MemoizedApiDocumentProps {

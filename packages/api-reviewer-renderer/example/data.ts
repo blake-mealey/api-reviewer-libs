@@ -1,29 +1,29 @@
 export const data = `openapi: 3.0.0
-servers:
-  - url: //petstore.swagger.io/v2
-    description: Default server
-  - url: //petstore.swagger.io/sandbox
-    description: Sandbox server
 info:
+  x-logo:
+    url: 'https://redocly.github.io/redoc/petstore-logo.png'
+    altText: Petstore logo
+  title: Swagger Petstore
+  version: 1.0.0
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
   description: |
     This is a sample server Petstore server.
     You can find out more about Swagger at
     [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).
     For this sample, you can use the api key \`special-key\` to test the authorization filters.
 
-  version: 1.0.0
-  title: Swagger Petstore
   termsOfService: 'http://swagger.io/terms/'
   contact:
     name: API Support
     email: apiteam@swagger.io
     url: https://github.com/Redocly/redoc
-  x-logo:
-    url: 'https://redocly.github.io/redoc/petstore-logo.png'
-    altText: Petstore logo
-  license:
-    name: Apache 2.0
-    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+servers:
+  - url: //petstore.swagger.io/v2
+    description: Default server
+  - url: //petstore.swagger.io/sandbox
+    description: Sandbox server
 externalDocs:
   description: Find out how to create Github repo for your OpenAPI spec.
   url: 'https://github.com/Rebilly/generator-openapi-repo'

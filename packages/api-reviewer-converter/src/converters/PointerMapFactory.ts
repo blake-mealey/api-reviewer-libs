@@ -54,7 +54,6 @@ export class PointerMapFactory {
 
   constructor(documentString: string, document: Document.Parsed, schema: any) {
     this.documentPositionFinder = new DocumentPositionFinder(documentString);
-    this.documentWalker = new DocumentWalker(document);
     this.document = document;
     this.pointerMap = new Map();
     this.schema = schema;
@@ -122,7 +121,7 @@ export class PointerMapFactory {
       })
     );
 
-    this.documentWalker.walk((path, node) => {
+    new DocumentWalker().walk(this.document.contents, (path, node) => {
       this.set(
         path,
         new PointerData(

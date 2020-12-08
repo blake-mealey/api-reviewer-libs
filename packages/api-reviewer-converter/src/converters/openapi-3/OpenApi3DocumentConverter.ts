@@ -3,14 +3,17 @@ import ApiDocumentConverter from '../ApiDocumentConverter';
 import { PointerMapFactory } from '../PointerMapFactory';
 import { schema } from './schema';
 import { PointerMap } from '../../api-document/IApiDocument';
+import { Document } from 'yaml';
 import { Collection, Node } from 'yaml/types';
-import { parse } from 'json-pointer';
+import { parse, compile } from 'json-pointer';
 import { IApiBlock } from '../../api-document/IApiBlock';
 import {
   ConverterHandlerMap,
   IConverterHandlerContext,
 } from '../ConverterHandler';
 import * as handlers from './handlers';
+import { DocumentWalker } from '../../utils/DocumentWalker';
+import { IConverterOptions } from '../IConverterOptions';
 
 function getInCollection(collection: Collection, pointer: string[]) {
   while (pointer.length > 0 && collection) {
@@ -21,97 +24,154 @@ function getInCollection(collection: Collection, pointer: string[]) {
   return collection as Node;
 }
 
+interface IWalkContext {
+  path: string[];
+  node: Node;
+  schemaName: string;
+  schemaNode: Collection;
+  schemaSupportsExtensions: boolean;
+}
+
 class OpenApi3DocumentConverter extends ApiDocumentConverter {
-  convertInfoAndOpenApi() {}
+  private documentWalker: DocumentWalker;
 
-  walkPointers(pointerMap: PointerMap, handlers: ConverterHandlerMap) {
-    pointerMap.forEach((pointerData, pointer) => {
-      if (pointerData.schemaName) {
-        const parsedPointer = pointer === '/' ? [] : parse(pointer);
+  constructor(
+    documentString: string,
+    document: Document.Parsed,
+    options: IConverterOptions
+  ) {
+    super(documentString, document, options);
+    this.documentWalker = new DocumentWalker();
+  }
 
-        const collection = getInCollection(
-          this.document.contents as Collection,
-          [...parsedPointer]
-        ) as Collection;
-
-        const blocks: IApiBlock[] = [];
-
-        const context: IConverterHandlerContext = {
-          block(
-            type: string,
-            subPointer: string | null,
-            data: Record<string, any>,
-            children?: IApiBlock[]
-          ) {
-            return new ApiBlock(
-              type,
-              subPointer ? [...parsedPointer, ...parse(subPointer)] : null,
-              data,
-              children
-            );
-          },
-          add(block: IApiBlock) {
-            blocks.push(block);
-          },
-          get<TNode>(subPointer: string) {
-            return (getInCollection(
-              collection,
+  createHandlerContext(
+    context: IWalkContext,
+    subPointer: string
+  ): IConverterHandlerContext {
+    const blocks: IApiBlock[] = [];
+    return {
+      blocks,
+      subPointer,
+      is<TNode extends Node>(
+        otherSubPointer: string,
+        callback: (node: TNode) => void
+      ) {
+        if (subPointer === otherSubPointer) {
+          callback(
+            (getInCollection(
+              context.schemaNode,
               parse(subPointer)
-            ) as unknown) as TNode;
-          },
-          has<TNode extends Node>(
-            subPointer: string,
-            callback: (node: TNode) => void
-          ) {
-            const node = (getInCollection(
-              collection,
-              parse(subPointer)
-            ) as unknown) as TNode;
-            if (node) {
-              callback(node);
-            }
-          },
-        };
-
-        const handler = handlers[pointerData.schemaName];
-        if (handler) {
-          handler(context);
+            ) as unknown) as TNode
+          );
         }
-
-        if (pointerData.supportsExtensions && this.options?.extensions) {
-          this.options.extensions
-            .filter(extension => pointerData.schemaName in extension.handlers)
-            .forEach(extension => {
-              const properties = Object.entries(extension.definition)
-                .filter(([k]) => k.includes('.'))
-                .flatMap(([, v]) =>
-                  Object.entries(v)
-                    .filter(([, schema]) => {
-                      const rules = schema.oas3;
-                      if (!rules || rules.usage === 'prohibited') {
-                        return false;
-                      }
-
-                      return (
-                        rules.usage === 'unrestricted' ||
-                        (rules.usage === 'restricted' &&
-                          rules.objectTypes?.includes(pointerData.schemaName))
-                      );
-                    })
-                    .map(([property]) => property)
-                );
-
-              properties.forEach(property => {
-                if (collection.has(property)) {
-                  const handler = extension.handlers[pointerData.schemaName];
-                  handler(context);
-                }
-              });
-            });
+      },
+      block(
+        type: string,
+        subPointer: string | null,
+        data: Record<string, any>,
+        children?: IApiBlock[]
+      ) {
+        return new ApiBlock(
+          type,
+          subPointer ? [...context.path, ...parse(subPointer)] : null,
+          data,
+          children
+        );
+      },
+      add(block: IApiBlock) {
+        blocks.push(block);
+      },
+      get<TNode>(subPointer: string) {
+        return (getInCollection(
+          context.schemaNode,
+          parse(subPointer)
+        ) as unknown) as TNode;
+      },
+      has<TNode extends Node>(
+        subPointer: string,
+        callback: (node: TNode) => void
+      ) {
+        const node = (getInCollection(
+          context.schemaNode,
+          parse(subPointer)
+        ) as unknown) as TNode;
+        if (node) {
+          callback(node);
         }
+      },
+    };
+  }
 
-        this.builder.appendBlocks(blocks);
+  walkNodes(
+    pointerMap: PointerMap,
+    handlers: ConverterHandlerMap,
+    context: IWalkContext
+  ) {
+    this.documentWalker.shallowWalk(context.node, (nodePath, node) => {
+      const path = [...context.path, ...nodePath];
+      const pointer = compile(path);
+
+      const subPath = path.slice(context.path.length);
+
+      const handlerContext: IConverterHandlerContext = this.createHandlerContext(
+        context,
+        compile(subPath)
+      );
+
+      const handler = handlers[context.schemaName];
+      if (handler) {
+        handler(handlerContext);
       }
+
+      // TODO: Simplify and improve
+      if (context.schemaSupportsExtensions && this.options?.extensions) {
+        this.options.extensions
+          .filter(extension => context.schemaName in extension.handlers)
+          .forEach(extension => {
+            const properties = Object.entries(extension.definition)
+              .filter(([k]) => k.includes('.'))
+              .flatMap(([, v]) =>
+                Object.entries(v)
+                  .filter(([, schema]) => {
+                    const rules = schema.oas3;
+                    if (!rules || rules.usage === 'prohibited') {
+                      return false;
+                    }
+
+                    return (
+                      rules.usage === 'unrestricted' ||
+                      (rules.usage === 'restricted' &&
+                        rules.objectTypes?.includes(context.schemaName))
+                    );
+                  })
+                  .map(([property]) => property)
+              );
+
+            properties.forEach(property => {
+              if (context.schemaNode.has(property)) {
+                const handler = extension.handlers[context.schemaName];
+                if (handler) {
+                  handler(handlerContext);
+                }
+              }
+            });
+          });
+      }
+
+      this.builder.appendBlocks(handlerContext.blocks);
+
+      const pointerData = pointerMap.get(pointer);
+      this.walkNodes(pointerMap, handlers, {
+        node,
+        path,
+        schemaSupportsExtensions: pointerData?.schemaName
+          ? pointerData.supportsExtensions
+          : context.schemaSupportsExtensions,
+        schemaName: pointerData?.schemaName ?? context.schemaName,
+        schemaNode: pointerData?.schemaName
+          ? (node as Collection)
+          : context.schemaNode,
+      });
     });
   }
 
@@ -124,7 +184,14 @@ class OpenApi3DocumentConverter extends ApiDocumentConverter {
 
     this.builder.setPointerMap(pointerMap);
 
-    this.walkPointers(pointerMap, handlers);
+    this.walkNodes(pointerMap, handlers, {
+      node: this.document.contents,
+      path: [],
+      schemaName: 'OpenAPI',
+      schemaNode: this.document.contents as Collection,
+      schemaSupportsExtensions: true,
+    });
+    // this.walkPointers(pointerMap, handlers);
 
     return this.builder.build();
   }

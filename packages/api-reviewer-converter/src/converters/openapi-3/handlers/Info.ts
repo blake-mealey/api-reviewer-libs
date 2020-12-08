@@ -1,53 +1,50 @@
 import { IConverterHandlerContext } from '../../ConverterHandler';
 import { Scalar, YAMLMap } from 'yaml/types';
 
-export function Info({ get, has, add, block }: IConverterHandlerContext) {
-  has<Scalar>('/title', title =>
+export function Info({ is, subPointer, add, block }: IConverterHandlerContext) {
+  is<Scalar>('/title', title => {
     add(
-      block('Markdown', '/title', {
+      block('Markdown', subPointer, {
         text: `# ${title}`,
       })
-    )
-  );
+    );
+  });
 
-  const version = get<Scalar>('/version');
-
-  const license = get<YAMLMap>('/license');
-  const licenseName = license.get('name');
-  const licenseUrl = license.get('url');
-
-  add(
-    block('Row', null, {}, [
-      version
-        ? block('Markdown', '/version', {
-            text: `
+  is<Scalar>('/version', version => {
+    add(
+      block('Markdown', subPointer, {
+        text: `
 |Version   |
 |----------|
 |${version}|`,
-          })
-        : null,
-      licenseName || licenseUrl
-        ? block('Markdown', '/license', {
-            text: `
+      })
+    );
+  });
+
+  is<YAMLMap>('/license', license => {
+    const licenseName = license.get('name');
+    const licenseUrl = license.get('url');
+    add(
+      block('Markdown', subPointer, {
+        text: `
 |License|
 |-------|
 |${
-              licenseName && licenseUrl
-                ? `[${licenseName}](${licenseUrl})`
-                : licenseName
-                ? licenseName
-                : `<${licenseUrl}>`
-            }|`,
-          })
-        : null,
-    ])
-  );
+          licenseName && licenseUrl
+            ? `[${licenseName}](${licenseUrl})`
+            : licenseName
+            ? licenseName
+            : `<${licenseUrl}>`
+        }|`,
+      })
+    );
+  });
 
-  has<Scalar>('/description', description =>
+  is<Scalar>('/description', description => {
     add(
-      block('Markdown', '/description', {
+      block('Markdown', subPointer, {
         text: description,
       })
-    )
-  );
+    );
+  });
 }
