@@ -39,8 +39,6 @@ export const MonacoEditor: React.FunctionComponent<MonacoEditorProps> = ({
   const [previousValue, setPreviousValue] = React.useState<string>(value);
 
   if (editorRef.current) {
-    editorRef.current.layout();
-
     if (value != previousValue) {
       setPreviousValue(editorRef.current.getValue());
       editorRef.current.setValue(value);
@@ -81,11 +79,19 @@ export const MonacoEditor: React.FunctionComponent<MonacoEditorProps> = ({
       }
     });
 
+    const onWindowResize = () => {
+      if (editorRef.current) {
+        editorRef.current.layout();
+      }
+    };
+    window.addEventListener('resize', onWindowResize);
+
     return () => {
       if (editorRef.current) {
         editorRef.current.dispose();
         editorRef.current = null;
       }
+      window.removeEventListener('resize', onWindowResize);
     };
   }, [containerRef]);
 
