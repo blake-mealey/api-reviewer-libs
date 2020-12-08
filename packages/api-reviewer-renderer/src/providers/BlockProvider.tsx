@@ -123,7 +123,7 @@ export const BlockProvider: FunctionComponent<BlockProviderProps> = ({
             onBlur={closeActions}
           >
             {actions ? (
-              <Fade in={actionsOpen} timeout={200}>
+              <Fade in={actionsOpen} timeout={100}>
                 <ActionGroup
                   ref={actionsGroupRef}
                   actions={actions}

@@ -8,7 +8,9 @@
     "build": "parcel build index.html"
   },
   "dependencies": {
+    "monaco-editor": "^0.21.2",
     "prismjs": "^1.22.0",
+    "react": ">=0.14.0",
     "react-app-polyfill": "^1.0.0"
   },
   "alias": {
