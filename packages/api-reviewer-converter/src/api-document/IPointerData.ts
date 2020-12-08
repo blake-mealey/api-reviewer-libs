@@ -7,9 +7,7 @@ export interface IDocumentPosition {
 export type Range = [IDocumentPosition, IDocumentPosition];
 
 export interface IPointerData {
-  keyRange: Range;
-  valueRange: Range;
-  fullRange: Range;
+  range: Range;
   supportsExtensions: boolean;
   schemaName?: string;
 }

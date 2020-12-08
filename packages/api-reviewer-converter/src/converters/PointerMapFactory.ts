@@ -1,5 +1,4 @@
 import { Document } from 'yaml';
-import { Pair } from 'yaml/types';
 import { PointerMap } from '../api-document/IApiDocument';
 import { compile, get } from 'json-pointer';
 import { PointerData } from '../api-document/PointerData';
@@ -114,21 +113,16 @@ export class PointerMapFactory {
   createPointerMap(): PointerMap {
     this.set(
       [''],
-      new PointerData(
-        this.documentPositionFinder.findRange([0, 0]),
-        this.documentPositionFinder.findRange([0, 0]),
-        {
-          ...this.schema,
-          $ref: '#/definitions/OpenAPI',
-        }
-      )
+      new PointerData(this.documentPositionFinder.findRange([0, 0]), {
+        ...this.schema,
+        $ref: '#/definitions/OpenAPI',
+      })
     );
 
     this.documentWalker.walk((path, node) => {
       this.set(
         path,
         new PointerData(
-          this.documentPositionFinder.findRange(node.range),
           this.documentPositionFinder.findRange(node.range),
           this.lookupPointerInSchema([...path])
         )

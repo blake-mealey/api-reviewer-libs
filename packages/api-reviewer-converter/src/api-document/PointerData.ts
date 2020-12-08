@@ -2,17 +2,12 @@ import { IPointerData, Range } from './IPointerData';
 import { parse } from 'json-pointer';
 
 export class PointerData implements IPointerData {
-  keyRange: Range;
-  valueRange: Range;
-  fullRange: Range;
+  range: Range;
   supportsExtensions: boolean;
   schemaName?: string;
 
-  constructor(keyRange: Range, valueRange: Range, schema?: any) {
-    this.keyRange = keyRange;
-    this.valueRange = valueRange;
-    this.fullRange = [keyRange[0], valueRange[1]];
-
+  constructor(range: Range, schema?: any) {
+    this.range = range;
     this.init(schema);
   }
 

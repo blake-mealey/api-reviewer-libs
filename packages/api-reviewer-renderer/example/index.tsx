@@ -126,7 +126,7 @@ const MemoizedApiDocument = React.memo<MemoizedApiDocumentProps>(
           if (block) {
             const pointerData = document.pointerMap.get(block.pointer);
 
-            const range = pointerData?.fullRange;
+            const range = pointerData?.range;
             if (range) {
               setSelections([
                 {
