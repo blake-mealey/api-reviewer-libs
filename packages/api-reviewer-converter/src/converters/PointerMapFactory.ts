@@ -2,7 +2,11 @@ import { Document } from 'yaml';
 import { PointerMap } from '../api-document/IApiDocument';
 import { compile, get } from 'json-pointer';
 import { PointerData } from '../api-document/PointerData';
-import { IDocumentPosition, IPointerData } from '../api-document/IPointerData';
+import {
+  IDocumentPosition,
+  IPointerData,
+  IRange,
+} from '../api-document/IPointerData';
 import { DocumentWalker } from '../utils/DocumentWalker';
 
 class DocumentPositionFinder {
@@ -24,21 +28,20 @@ class DocumentPositionFinder {
     const sub = this.documentString.substring(0, globalNumber);
     const lines = sub.split('\n');
     const lineNumber = lines.length;
-    const characterNumber = lines[lines.length - 1].length + 1;
+    const columnNumber = lines[lines.length - 1].length + 1;
     pos = {
       line: lineNumber,
-      character: characterNumber,
-      global: globalNumber,
+      column: columnNumber,
     };
     this.positionMap.set(globalNumber, pos);
     return pos;
   }
 
-  findRange([globalPosition1, globalPosition2]: [number, number]): [
-    IDocumentPosition,
-    IDocumentPosition
-  ] {
-    return [this.find(globalPosition1), this.find(globalPosition2)];
+  findRange([globalPosition0, globalPosition1]: [number, number]): IRange {
+    return {
+      start: this.find(globalPosition0),
+      end: this.find(globalPosition1),
+    };
   }
 }
 

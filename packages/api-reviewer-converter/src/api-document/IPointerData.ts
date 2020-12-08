@@ -1,13 +1,15 @@
 export interface IDocumentPosition {
   line: number;
-  character: number;
-  global: number;
+  column: number;
 }
 
-export type Range = [IDocumentPosition, IDocumentPosition];
+export interface IRange {
+  start: IDocumentPosition;
+  end: IDocumentPosition;
+}
 
 export interface IPointerData {
-  range: Range;
+  range: IRange;
   supportsExtensions: boolean;
   schemaName?: string;
 }

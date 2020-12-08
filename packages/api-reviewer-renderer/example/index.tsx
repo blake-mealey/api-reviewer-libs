@@ -130,10 +130,10 @@ const MemoizedApiDocument = React.memo<MemoizedApiDocumentProps>(
             if (range) {
               setSelections([
                 {
-                  selectionStartLineNumber: range[0].line,
-                  selectionStartColumn: range[0].character,
-                  positionLineNumber: range[1].line,
-                  positionColumn: range[1].character,
+                  selectionStartLineNumber: range.start.line,
+                  selectionStartColumn: range.start.column,
+                  positionLineNumber: range.end.line,
+                  positionColumn: range.end.column,
                 },
               ]);
             }
