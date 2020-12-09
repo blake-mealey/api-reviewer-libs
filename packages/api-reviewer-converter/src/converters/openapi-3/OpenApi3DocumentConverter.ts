@@ -52,10 +52,7 @@ class OpenApi3DocumentConverter extends ApiDocumentConverter {
     return {
       blocks,
       subPointer,
-      is<TNode extends Node>(
-        otherSubPointer: string,
-        callback: (node: TNode) => void
-      ) {
+      is<TNode>(otherSubPointer: string, callback: (node: TNode) => void) {
         if (subPointer === otherSubPointer) {
           callback(
             (getInCollection(
@@ -87,10 +84,7 @@ class OpenApi3DocumentConverter extends ApiDocumentConverter {
           parse(subPointer)
         ) as unknown) as TNode;
       },
-      has<TNode extends Node>(
-        subPointer: string,
-        callback: (node: TNode) => void
-      ) {
+      has<TNode>(subPointer: string, callback: (node: TNode) => void) {
         const node = (getInCollection(
           context.schemaNode,
           parse(subPointer)
@@ -98,6 +92,14 @@ class OpenApi3DocumentConverter extends ApiDocumentConverter {
         if (node) {
           callback(node);
         }
+      },
+      table([header, ...rows]: string[][]) {
+        const formatRow = row => `|${row.join('|')}|\n`;
+        return (
+          formatRow(header) +
+          formatRow(header.map(() => '---')) +
+          rows.map(formatRow).join('')
+        );
       },
     };
   }

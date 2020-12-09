@@ -1,8 +1,14 @@
 import { IConverterHandlerContext } from '../../ConverterHandler';
-import { Scalar, YAMLMap } from 'yaml/types';
+import { YAMLMap } from 'yaml/types';
 
-export function Info({ is, subPointer, add, block }: IConverterHandlerContext) {
-  is<Scalar>('/title', title => {
+export function Info({
+  table,
+  is,
+  subPointer,
+  add,
+  block,
+}: IConverterHandlerContext) {
+  is<string>('/title', title => {
     add(
       block('Markdown', subPointer, {
         text: `# ${title}`,
@@ -10,14 +16,11 @@ export function Info({ is, subPointer, add, block }: IConverterHandlerContext) {
     );
   });
 
-  is<Scalar>('/version', version => {
+  is<string>('/version', version => {
     add(
       block('Markdown', subPointer, {
         display: 'inline-block',
-        text: `
-|Version   |
-|----------|
-|${version}|`,
+        text: table([['Version'], [version.toString()]]),
       })
     );
   });
@@ -28,21 +31,21 @@ export function Info({ is, subPointer, add, block }: IConverterHandlerContext) {
     add(
       block('Markdown', subPointer, {
         display: 'inline-block',
-        text: `
-|License|
-|-------|
-|${
-          licenseName && licenseUrl
-            ? `[${licenseName}](${licenseUrl})`
-            : licenseName
-            ? licenseName
-            : `<${licenseUrl}>`
-        }|`,
+        text: table([
+          ['License'],
+          [
+            licenseName && licenseUrl
+              ? `[${licenseName}](${licenseUrl})`
+              : licenseName
+              ? licenseName
+              : `<${licenseUrl}>`,
+          ],
+        ]),
       })
     );
   });
 
-  is<Scalar>('/description', description => {
+  is<string>('/description', description => {
     add(
       block('Markdown', subPointer, {
         text: description,

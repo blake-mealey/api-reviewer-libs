@@ -1,32 +1,26 @@
 import { IConverterHandlerContext } from '../../ConverterHandler';
-import { Scalar } from 'yaml/types';
 
 export function Server({
   is,
   subPointer,
   add,
   block,
+  table,
 }: IConverterHandlerContext) {
-  is<Scalar>('/url', url => {
+  is<string>('/url', url => {
     add(
       block('Markdown', subPointer, {
         display: 'inline-block',
-        text: `
-|URL   |
-|----------|
-|[${url}](${url})|`,
+        text: table([['URL'], [`[${url}](${url})`]]),
       })
     );
   });
 
-  is<Scalar>('/description', description => {
+  is<string>('/description', description => {
     add(
       block('Markdown', subPointer, {
         display: 'inline-block',
-        text: `
-|Description   |
-|----------|
-|${description}|`,
+        text: table([['Description'], [description]]),
       })
     );
   });
