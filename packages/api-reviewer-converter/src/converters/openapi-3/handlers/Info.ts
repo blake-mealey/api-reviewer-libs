@@ -13,6 +13,7 @@ export function Info({ is, subPointer, add, block }: IConverterHandlerContext) {
   is<Scalar>('/version', version => {
     add(
       block('Markdown', subPointer, {
+        display: 'inline-block',
         text: `
 |Version   |
 |----------|
@@ -26,6 +27,7 @@ export function Info({ is, subPointer, add, block }: IConverterHandlerContext) {
     const licenseUrl = license.get('url');
     add(
       block('Markdown', subPointer, {
+        display: 'inline-block',
         text: `
 |License|
 |-------|

@@ -1,16 +1,16 @@
 import React from 'react';
-import { Grid } from '@material-ui/core';
+import styled from 'styled-components';
+
+const ColumnLayout = styled.div`
+  & > * {
+    padding: ${p => p.theme.spacing(2) / 2}px;
+  }
+`;
 
 export interface ColumnLayoutProps {}
 
 export const ColumnBlock: React.FunctionComponent<ColumnLayoutProps> = ({
   children,
 }) => {
-  return (
-    <Grid container spacing={2} direction="column">
-      {React.Children.map(children, child => (
-        <Grid item>{child}</Grid>
-      ))}
-    </Grid>
-  );
+  return <ColumnLayout>{children}</ColumnLayout>;
 };

@@ -113,7 +113,7 @@ export const BlockProvider: FunctionComponent<BlockProviderProps> = ({
   return (
     <BlockContext.Provider value={block}>
       {block.pointer ? (
-        <Box position="relative">
+        <Box position="relative" display={block.data?.display ?? 'block'}>
           <Container
             className={actionsOpen ? 'focused' : undefined}
             tabIndex={0}

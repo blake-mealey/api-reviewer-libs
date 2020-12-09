@@ -10,6 +10,7 @@ export function Server({
   is<Scalar>('/url', url => {
     add(
       block('Markdown', subPointer, {
+        display: 'inline-block',
         text: `
 |URL   |
 |----------|
@@ -21,6 +22,7 @@ export function Server({
   is<Scalar>('/description', description => {
     add(
       block('Markdown', subPointer, {
+        display: 'inline-block',
         text: `
 |Description   |
 |----------|
