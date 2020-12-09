@@ -45,6 +45,15 @@ export function Info({
     );
   });
 
+  is<string>('/termsOfService', terms => {
+    add(
+      block('Markdown', subPointer, {
+        display: 'inline-block',
+        text: table([['Terms of Service'], [`[${terms}](${terms})`]]),
+      })
+    );
+  });
+
   is<string>('/description', description => {
     add(
       block('Markdown', subPointer, {
