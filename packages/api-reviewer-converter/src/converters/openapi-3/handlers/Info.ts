@@ -45,6 +45,10 @@ export function Info({
     );
   });
 
+  is('/contact', () => {
+    add(block('Markdown', subPointer, { text: '## Contact' }));
+  });
+
   is<string>('/termsOfService', terms => {
     add(
       block('Markdown', subPointer, {

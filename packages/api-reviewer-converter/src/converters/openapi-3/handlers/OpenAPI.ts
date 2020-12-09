@@ -16,6 +16,6 @@ export function OpenAPI({
   );
 
   is('/servers', () => {
-    add(block('Markdown', null, { text: '## Servers' }));
+    add(block('Markdown', subPointer, { text: '## Servers' }));
   });
 }
