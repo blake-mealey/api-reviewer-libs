@@ -1,21 +1,25 @@
 import { IConverterHandlerContext } from '../../ConverterHandler';
-import { Scalar } from 'yaml/types';
 
 export function OpenAPI({
-  is,
   subPointer,
-  add,
   block,
+  get,
+  convertSubPaths,
 }: IConverterHandlerContext) {
-  is<Scalar>('/openapi', openapi =>
-    add(
-      block('Markdown', subPointer, {
-        text: `###### openapi v${openapi}`,
-      })
-    )
-  );
+  if (subPointer === '/openapi') {
+    return block('Markdown', subPointer, {
+      text: `###### openapi v${get<string>(subPointer)}`,
+    });
+  }
 
-  is('/servers', () => {
-    add(block('Markdown', subPointer, { text: '## Servers' }));
-  });
+  if (subPointer === '/servers') {
+    return block(
+      'Markdown',
+      subPointer,
+      { text: '## Servers' },
+      convertSubPaths()
+    );
+  }
+
+  return convertSubPaths();
 }

@@ -1,36 +1,30 @@
 import { IConverterHandlerContext } from '../../ConverterHandler';
 
 export function Contact({
-  is,
   subPointer,
-  add,
   block,
   table,
+  get,
 }: IConverterHandlerContext) {
-  is<string>('/name', name => {
-    add(
-      block('Markdown', subPointer, {
-        display: 'inline-block',
-        text: table([['Name'], [name]]),
-      })
-    );
-  });
+  if (subPointer === '/name') {
+    return block('Markdown', subPointer, {
+      display: 'inline-block',
+      text: table([['Name'], [get<string>(subPointer)]]),
+    });
+  }
 
-  is<string>('/url', url => {
-    add(
-      block('Markdown', subPointer, {
-        display: 'inline-block',
-        text: table([['URL'], [`[${url}](${url})`]]),
-      })
-    );
-  });
+  if (subPointer === '/url') {
+    const url = get<string>(subPointer);
+    return block('Markdown', subPointer, {
+      display: 'inline-block',
+      text: table([['URL'], [`[${url}](${url})`]]),
+    });
+  }
 
-  is<string>('/email', email => {
-    add(
-      block('Markdown', subPointer, {
-        display: 'inline-block',
-        text: table([['Email'], [email]]),
-      })
-    );
-  });
+  if (subPointer === '/email') {
+    return block('Markdown', subPointer, {
+      display: 'inline-block',
+      text: table([['Email'], [get<string>(subPointer)]]),
+    });
+  }
 }

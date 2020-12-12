@@ -1,11 +1,7 @@
 import { IApiBlock } from '../api-document/IApiBlock';
 
 export interface IConverterHandlerContext {
-  blocks: IApiBlock[];
   subPointer: string;
-  add(block: IApiBlock): void;
-  is<TNode>(subPointer: string, callback: (node: TNode) => void);
-  has<TNode>(subPointer: string, callback: (node: TNode) => void);
   get<TNode>(subPointer: string): TNode;
   block(
     type: string,
@@ -14,6 +10,7 @@ export interface IConverterHandlerContext {
     children?: IApiBlock[]
   ): IApiBlock;
   table(rows: string[][]): string;
+  convertSubPaths(): IApiBlock[];
 }
 
 export type ConverterHandler = (context: IConverterHandlerContext) => void;

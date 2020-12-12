@@ -1,68 +1,65 @@
 import { IConverterHandlerContext } from '../../ConverterHandler';
-import { YAMLMap } from 'yaml/types';
 
 export function Info({
   table,
-  is,
   subPointer,
-  add,
   block,
+  get,
+  convertSubPaths,
 }: IConverterHandlerContext) {
-  is<string>('/title', title => {
-    add(
-      block('Markdown', subPointer, {
-        text: `# ${title}`,
-      })
-    );
-  });
+  if (subPointer === '/title') {
+    return block('Markdown', subPointer, {
+      text: `# ${get<string>(subPointer)}`,
+    });
+  }
 
-  is<string>('/version', version => {
-    add(
-      block('Markdown', subPointer, {
-        display: 'inline-block',
-        text: table([['Version'], [version.toString()]]),
-      })
-    );
-  });
+  if (subPointer === '/version') {
+    return block('Markdown', subPointer, {
+      display: 'inline-block',
+      text: table([['Version'], [get<string>(subPointer)]]),
+    });
+  }
 
-  is<YAMLMap>('/license', license => {
-    const licenseName = license.get('name');
-    const licenseUrl = license.get('url');
-    add(
-      block('Markdown', subPointer, {
-        display: 'inline-block',
-        text: table([
-          ['License'],
-          [
-            licenseName && licenseUrl
-              ? `[${licenseName}](${licenseUrl})`
-              : licenseName
-              ? licenseName
-              : `<${licenseUrl}>`,
-          ],
-        ]),
-      })
-    );
-  });
+  if (subPointer === '/license') {
+    const licenseName = get<string>(`${subPointer}/name`);
+    const licenseUrl = get<string>(`${subPointer}/url`);
+    return block('Markdown', subPointer, {
+      display: 'inline-block',
+      text: table([
+        ['License'],
+        [
+          licenseName && licenseUrl
+            ? `[${licenseName}](${licenseUrl})`
+            : licenseName
+            ? licenseName
+            : `<${licenseUrl}>`,
+        ],
+      ]),
+    });
+  }
 
-  is('/contact', () => {
-    add(block('Markdown', subPointer, { text: '## Contact' }));
-  });
-
-  is<string>('/termsOfService', terms => {
-    add(
-      block('Markdown', subPointer, {
-        display: 'inline-block',
-        text: table([['Terms of Service'], [`[${terms}](${terms})`]]),
-      })
+  if (subPointer === '/contact') {
+    return block(
+      'Markdown',
+      subPointer,
+      { text: '## Contact' },
+      convertSubPaths()
     );
-  });
+  }
 
-  is<string>('/description', description => {
-    add(
-      block('Markdown', subPointer, {
-        text: description,
-      })
-    );
-  });
+  if (subPointer === '/termsOfService') {
+    const terms = get<string>(subPointer);
+    return block('Markdown', subPointer, {
+      display: 'inline-block',
+      text: table([['Terms of Service'], [`[${terms}](${terms})`]]),
+    });
+  }
+
+  if (subPointer === '/description') {
+    return block('Markdown', subPointer, {
+      text: get<string>(subPointer),
+    });
+  }
+
+  return convertSubPaths;
 }

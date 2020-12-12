@@ -7,6 +7,12 @@ export interface MarkdownBlockProps {
 
 export const MarkdownBlock: React.FunctionComponent<MarkdownBlockProps> = ({
   text,
+  children,
 }) => {
-  return <Markdown markdown={text} />;
+  return (
+    <>
+      <Markdown markdown={text} />
+      {children}
+    </>
+  );
 };
