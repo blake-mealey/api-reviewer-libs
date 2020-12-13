@@ -39,12 +39,9 @@ export function Info({
   }
 
   if (subPointer === '/contact') {
-    return block(
-      'Markdown',
-      subPointer,
-      { text: '## Contact' },
-      convertSubPaths()
-    );
+    return block('Table', subPointer, { header: 'Contact' }, [
+      ...convertSubPaths(),
+    ]);
   }
 
   if (subPointer === '/termsOfService') {

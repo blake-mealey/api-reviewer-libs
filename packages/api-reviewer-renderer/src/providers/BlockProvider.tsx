@@ -17,14 +17,17 @@ export const useBlock = () => {
 };
 
 const Container = styled.div`
+  position: relative;
   border-radius: ${p => p.theme.shape.borderRadius}px;
   transition: ease-in-out 0.1s;
 
   &:hover,
   &:focus,
   &.focused {
-    background-color: rgba(0, 0, 0, 0.01);
-    box-shadow: 0 0 3px rgba(0, 0, 0, 0.15);
+    background-color: ${p => p.theme.palette.background.paper};
+    box-shadow: 0 0 0 ${p => p.theme.spacing(1) / 2}px
+        ${p => p.theme.palette.background.paper},
+      0 0 3px ${p => p.theme.spacing(1) / 2}px rgba(0, 0, 0, 0.15);
     outline: none;
   }
 `;
@@ -113,27 +116,28 @@ export const BlockProvider: FunctionComponent<BlockProviderProps> = ({
   return (
     <BlockContext.Provider value={block}>
       {block.pointer ? (
-        <Box position="relative" display={block.data?.display ?? 'block'}>
-          <Container
-            className={actionsOpen ? 'focused' : undefined}
-            tabIndex={0}
-            onMouseEnter={openActions}
-            onMouseLeave={closeActions}
-            onFocus={openActions}
-            onBlur={closeActions}
-          >
-            {actions ? (
-              <Fade in={actionsOpen} timeout={100}>
-                <ActionGroup
-                  ref={actionsGroupRef}
-                  actions={actions}
-                  onActionClick={action => action.onClick(block)}
-                />
-              </Fade>
-            ) : null}
-            <Box p={1}>{children}</Box>
-          </Container>
-        </Box>
+        <Container
+          className={actionsOpen ? 'focused' : undefined}
+          tabIndex={0}
+          onMouseEnter={openActions}
+          onMouseLeave={closeActions}
+          onFocus={openActions}
+          onBlur={closeActions}
+          style={{
+            display: block.data?.display ?? 'block',
+          }}
+        >
+          {actions ? (
+            <Fade in={actionsOpen} timeout={100}>
+              <ActionGroup
+                ref={actionsGroupRef}
+                actions={actions}
+                onActionClick={action => action.onClick(block)}
+              />
+            </Fade>
+          ) : null}
+          {children}
+        </Container>
       ) : (
         children
       )}

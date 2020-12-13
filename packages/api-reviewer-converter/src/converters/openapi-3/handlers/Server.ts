@@ -1,23 +1,18 @@
 import { IConverterHandlerContext } from '../../ConverterHandler';
 
-export function Server({
-  subPointer,
-  block,
-  table,
-  get,
-}: IConverterHandlerContext) {
+export function Server({ subPointer, block, get }: IConverterHandlerContext) {
   if (subPointer === '/url') {
     const url = get<string>(subPointer);
     return block('Markdown', subPointer, {
-      display: 'inline-block',
-      text: table([['URL'], [`[${url}](${url})`]]),
+      column: 'url',
+      text: `[${url}](${url})`,
     });
   }
 
   if (subPointer === '/description') {
     return block('Markdown', subPointer, {
-      display: 'inline-block',
-      text: table([['Description'], [get<string>(subPointer)]]),
+      column: 'description',
+      text: get<string>(subPointer),
     });
   }
 }

@@ -1,5 +1,6 @@
 import {
   Link,
+  TableContainer,
   Table,
   TableBody,
   TableCell,
@@ -39,7 +40,11 @@ const renderers: { [nodeType: string]: ElementType } = {
     return <Link href={href}>{children}</Link>;
   },
   table({ children }) {
-    return <Table>{children}</Table>;
+    return (
+      <TableContainer>
+        <Table>{children}</Table>
+      </TableContainer>
+    );
   },
   tableHead({ children }) {
     return <TableHead>{children}</TableHead>;

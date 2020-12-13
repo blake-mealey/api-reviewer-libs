@@ -2,15 +2,12 @@ import { ApiBlock } from '../../api-document/ApiBlock';
 import ApiDocumentConverter from '../ApiDocumentConverter';
 import { PointerMapFactory } from '../PointerMapFactory';
 import { schema } from './schema';
-import { IApiDocument, PointerMap } from '../../api-document/IApiDocument';
+import { PointerMap } from '../../api-document/IApiDocument';
 import { Document } from 'yaml';
 import { Collection, Node } from 'yaml/types';
 import { parse, compile } from 'json-pointer';
 import { IApiBlock } from '../../api-document/IApiBlock';
-import {
-  ConverterHandlerMap,
-  IConverterHandlerContext,
-} from '../ConverterHandler';
+import { IConverterHandlerContext } from '../ConverterHandler';
 import * as handlers from './handlers';
 import { DocumentWalker } from '../../utils/DocumentWalker';
 import { IConverterOptions } from '../IConverterOptions';
@@ -30,6 +27,7 @@ interface IWalkContext {
   node: Node;
   schemaName: string;
   schemaNode: Collection;
+  schemaPath: string[];
   schemaSupportsExtensions: boolean;
 }
 
@@ -94,6 +92,7 @@ class OpenApi3DocumentConverter extends ApiDocumentConverter {
           schemaNode: pointerData?.schemaName
             ? (node as Collection)
             : context.schemaNode,
+          schemaPath: pointerData?.schemaName ? path : context.schemaPath,
         });
       },
     };
@@ -106,7 +105,7 @@ class OpenApi3DocumentConverter extends ApiDocumentConverter {
       const pointer = compile(path);
 
       // TODO: Based on schema path!
-      const subPath = path.slice(context.path.length);
+      const subPath = path.slice(context.schemaPath.length);
 
       const pointerData = this.pointerMap.get(pointer);
       const handlerContext: IConverterHandlerContext = this.createHandlerContext(
@@ -149,6 +148,7 @@ class OpenApi3DocumentConverter extends ApiDocumentConverter {
       path: [],
       schemaName: 'OpenAPI',
       schemaNode: this.document.contents as Collection,
+      schemaPath: [],
       schemaSupportsExtensions: true,
     });
     this.builder.appendBlocks(blocks);

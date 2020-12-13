@@ -159,7 +159,7 @@ const App = () => {
 
   return (
     <Container maxWidth="xl">
-      <Layout mt={4} display="flex" flexDirection="row">
+      <Layout my={4} display="flex" flexDirection="row">
         <Box width="50%">
           <MemoizedApiDocument
             document={document}

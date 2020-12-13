@@ -3,13 +3,13 @@ import styled from 'styled-components';
 
 const ColumnLayout = styled.div`
   & > * {
-    padding: ${p => p.theme.spacing(2) / 2}px;
+    padding: ${p => p.theme.spacing(2) / 2}px 0;
   }
 `;
 
-export interface ColumnLayoutProps {}
+export interface ColumnBlockProps {}
 
-export const ColumnBlock: React.FunctionComponent<ColumnLayoutProps> = ({
+export const ColumnBlock: React.FunctionComponent<ColumnBlockProps> = ({
   children,
 }) => {
   return <ColumnLayout>{children}</ColumnLayout>;

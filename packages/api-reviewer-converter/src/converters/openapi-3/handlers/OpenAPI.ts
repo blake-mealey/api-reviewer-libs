@@ -13,12 +13,11 @@ export function OpenAPI({
   }
 
   if (subPointer === '/servers') {
-    return block(
-      'Markdown',
-      subPointer,
-      { text: '## Servers' },
-      convertSubPaths()
-    );
+    return block('Table', subPointer, { header: 'Servers' }, [
+      block('Markdown', null, { column: 'url', text: 'URL' }),
+      block('Markdown', null, { column: 'description', text: 'Description' }),
+      ...convertSubPaths(),
+    ]);
   }
 
   return convertSubPaths();
